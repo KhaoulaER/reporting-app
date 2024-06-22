@@ -1,0 +1,37 @@
+<p-dialog header="Preuves" [modal]="true" [(visible)]="showPreuves" [style]="{ height: '600px',width:'670px'}" styleClass="justify-content-center align-items">
+
+<div class="p-toolbar-group-start" style="margin-bottom: 20px;">
+    <button
+      pButton
+      pRipple
+      label="New"
+      style="margin-right: 5px;"
+      icon="pi pi-plus"
+      class="p-button-info mr-2"
+      (click)="showAddForm = true" 
+    ></button>
+  </div>
+<!-- Formulaire pour ajouter une nouvelle preuve -->
+<div *ngIf="showAddForm" class="add-form">
+    <app-preuve-add [selectedPcc]="selectedPcc"></app-preuve-add>
+    
+</div>
+
+<h4 class="ml-3 mt-0">Liste des preuves</h4>
+
+    
+    <p-table [value]="preuves" [paginator]="true" [rows]="5">
+        <ng-template pTemplate="header">
+        <tr>
+            <th>Preuve</th>
+            <th>Action</th>
+        </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-preuve>
+        <tr>
+            <td>{{ preuve.designation }}</td>
+            <td><button  pButton pRipple icon="pi pi-trash" class="del-button p-button-rounded" (click)="handleDeletePreuve(preuve)" style="margin-right: 15px;"></button></td>
+        </tr>
+        </ng-template>
+    </p-table>
+    </p-dialog>

@@ -1,0 +1,30 @@
+ <!--EDIT MODAL-->
+ <p-dialog header="Modifier le chapitre" [modal]="true" [(visible)]="display" [style]="{ height: '300px',width:'570px'}" styleClass="justify-content-center align-items">
+    <form [formGroup]="updateForm">
+        <div class="field" style="margin-right: 62px;">
+            <label for="titre" class="font-semibold w-6rem">Titre</label>
+            <input pInputText id="titre" style="width: 370px;" formControlName="titre" class="flex-auto"  autocomplete="off" />
+         </div>
+          <small *ngIf="titre.invalid && (titre.dirty || titre.touched)" class="block p-error">
+            <div *ngIf="titre.errors?.['required']">Ce champs est important!.</div>
+        </small>
+        <div class="field">
+            <label for="" class="font-semibold w-6rem">Description</label>
+            <textarea 
+            rows="4" 
+            cols="50" 
+            id="description" 
+            formControlName="description" 
+            required
+            pInputTextarea 
+            >
+        </textarea>
+        </div>
+
+    <div class="flex justify-content-center gap-2">
+        <button label="Cancel" pButton severity="secondary" (click)="display = false" ></button>
+        <button label="EDIT" pButton (click)="handleSubmit()" ></button>
+    
+        </div>
+  </form>
+</p-dialog>

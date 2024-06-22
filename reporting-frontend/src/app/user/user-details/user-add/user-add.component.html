@@ -1,0 +1,131 @@
+<div class="flex justify-content-center align-items-center">
+<form action="" [formGroup]="userFormGroup" (ngSubmit)="submitDetails()">
+    <p-card header="Ajouter un nouvel utilisateur" [style]="{width: '660px'}">
+        
+            <div class="field">
+                <label for="penom">Prénom</label><br>
+                <input 
+                    type="text" 
+                    pInputText  
+                    formControlName="prenom" 
+                    class="w-full" name="prenom"  
+                    placeholder="Prénom"  
+                 />
+            </div>
+            <small *ngIf="prenom.invalid && (prenom.dirty || prenom.touched)" class="block p-error">
+                <div *ngIf="prenom.errors?.['required']">Prénom est obligatoire.</div>
+                <div *ngIf="prenom.errors?.['pattern']">Entrez un prénom valide</div>
+            </small>
+            <div class="field">
+                <label for="nom">Nom</label><br>
+                <input 
+                    type="text" pInputText 
+                    formControlName="nom" 
+                    class="w-full" name="nom" 
+                    placeholder="Type your nom"  
+                />
+            </div>
+            <small *ngIf="nom.invalid && (nom.dirty || nom.touched)" class="block p-error">
+                <div *ngIf="nom.errors?.['required']">Nom est obligatoire.</div>
+                <div *ngIf="nom.errors?.['pattern']">Entrez un nom valide</div>
+            </small>
+        
+        <div class="field">
+            <label for="email">Email</label><br>
+            <input 
+                type="text" pInputText 
+                formControlName="email" 
+                class="w-full" name="email" 
+                placeholder="Type your email"  
+            />
+        </div>
+        <small *ngIf="email.invalid && (email.dirty || email.touched)" class="block p-error">
+            <div *ngIf="email.errors?.['required']">Email est obligatoire..</div>
+            <div *ngIf="email.errors?.['email']">Format non vallide</div>
+        </small>
+        <div class="field">
+            <label for="phone">Tel:</label><br>
+            <input 
+                type="text" pInputText 
+                formControlName="phone" 
+                class="w-full" name="phone" 
+                placeholder="Tél:"  
+            />
+        </div>
+        <small *ngIf="phone.invalid && (phone.dirty || phone.touched)" class="block p-error">
+            <div *ngIf="phone.errors?.['required']">Numéro de téléphone est obligatoire.</div>
+        </small>
+        
+        <div class="field">
+            <label for="password">Mot de passe</label><br>
+            <input 
+                type="password" pInputText 
+                formControlName="password" 
+                class="w-full" name="password" 
+                placeholder="Entrez un mot de passe"  
+            />
+        </div>
+        <small *ngIf="password.invalid && (password.dirty || password.touched)" class="block p-error">
+            <div *ngIf="password.errors?.['required']">mot de passe est obligatoire..</div>
+            <div *ngIf="password.errors?.['password']">mot de passe invalide</div>
+        </small>
+
+            <div class="field">
+                <label for="confirmPassword">Confirmer mot de passe</label><br>
+                <input 
+                    type="password" pInputText 
+                    formControlName="confirmPassword" 
+                    class="w-full" name="confirmPassword" 
+                    placeholder="Confirm le mot de passe"  
+                />
+            </div>
+            <small *ngIf="confirmPassword.invalid && (confirmPassword.dirty || confirmPassword.touched)" class="block p-error">
+                <div *ngIf="confirmPassword.errors?.['required']">Confirmation de mot de passe obligatoire.</div>
+            </small>
+            <small *ngIf="userFormGroup.errors?.['passwordMismatch'] && confirmPassword.valid && password.valid" class="block p-error">
+                Mot de passe ne correspond pas.
+            </small>
+
+       
+            <div class="field">
+                <label for="role">Rôle</label><br>
+                <p-dropdown 
+                    id="roleDropdown" 
+                    [options]="roles" 
+                    formControlName="role"
+                    styleClass="w-full"
+                    placeholder="Choisir un rôle">
+                </p-dropdown> 
+            </div>  
+            <!--div class="field">
+                <label for="role">Upload photo</label><br>
+                <input pFileUpload 
+                type="file"
+                    mode="basic" 
+                    chooseLabel="Browse" 
+                    chooseIcon="pi pi-upload"
+                    name="photo[]" 
+                    accept="image/*" 
+                    maxFileSize="1000000" 
+                    fileSelection="single"
+                    (change)="onselectFile($event)"
+                    />
+                    <small *ngIf="photo.invalid && (photo.dirty || photo.touched)" class="block p-error">
+                        <div *ngIf="photo.errors?.['required']">Photo is required.</div>
+                        <div *ngIf="photo.errors?.['pattern']">Upload a valid format</div>
+                    </small>
+            </div-->
+            
+            
+    <br>
+        <button
+            pButton
+            pRipple
+            label="Enregistrer" 
+            type="submit"
+            class="w-full p-3 text-xl">
+        </button>
+        
+    </p-card>
+</form>
+</div>

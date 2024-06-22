@@ -1,0 +1,9 @@
+<form [formGroup]="addPreuve">
+        <div class="field">
+            <label for="designation" class="font-semibold w-6rem">Preuve:</label>
+            <input pInputText type="text" id="designation" formControlName="designation" name="designation" placeholder="Designation de preuve" required>
+        
+        <button type="submit" pButton pRipple icon="pi pi-check" label="Ajouter" class="p-button-info ml-2" (click)="handleAddPreuve()"></button>
+        <button type="button" pButton pRipple icon="pi pi-times" label="Annuler" class=" del-button ml-2" (click)="showAddForm = false"></button>
+   </div>
+ </form>

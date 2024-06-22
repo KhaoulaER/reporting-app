@@ -1,0 +1,44 @@
+ <!--EDIT MODAL-->
+ <p-dialog header="Edit Profile" [modal]="true" [(visible)]="visible" [style]="{ height: '300px',width:'570px'}" styleClass="justify-content-center align-items">
+    <form [formGroup]="updateForm">
+    <div style="display: inline-block;">
+    <div class="field" style="margin-right: 62px;">
+        <label for="firstName" class="font-semibold w-6rem">First name</label><br/>
+        <input pInputText id="firstName" formControlName="firstName" class="flex-auto"  autocomplete="off" />
+      </div>
+      <small *ngIf="firstName.invalid && (firstName.dirty || firstName.touched)" class="block p-error">
+        <div *ngIf="firstName.errors?.['required']">first name is required.</div>
+        <div *ngIf="firstName.errors?.['pattern']">Enter a valid name</div>
+    </small>
+      <div class="field">
+        <label for="lastName" class="font-semibold w-6rem">Last name</label><br/>
+        <input pInputText id="lastName" formControlName="lastName" class="flex-auto"  autocomplete="off" />
+    </div>  
+    <small *ngIf="lastName.invalid && (lastName.dirty || lastName.touched)" class="block p-error">
+        <div *ngIf="lastName.errors?.['required']">last name is required.</div>
+        <div *ngIf="lastName.errors?.['pattern']">Enter a valid name</div>
+    </small>
+  </div>
+    <div style="display: inline-block;">
+    <div class="field" style="margin-right: 62px;">
+        <label for="email" class="font-semibold w-6rem">Email</label><br>
+        <input pInputText id="email" class="flex-auto" formControlName="email" autocomplete="off" />
+      </div>
+      <small *ngIf="email.invalid && (email.dirty || email.touched)" class="block p-error">
+        <div *ngIf="email.errors?.['required']">email is required.</div>
+        <div *ngIf="email.errors?.['email']">Email should be valid</div>
+    </small>
+        <div class="field">
+        <label for="phone" class="font-semibold w-6rem">Phone</label><br>
+        <input pInputText id="phone" class="flex-auto" formControlName="phone" autocomplete="off" />
+    </div>
+    <small *ngIf="phone.invalid && (phone.dirty || phone.touched)" class="block p-error">
+        <div *ngIf="phone.errors?.['required']">Phone number is required.</div>
+    </small>
+  </div>
+    <div class="flex justify-content-center gap-2">
+        <button label="Cancel" pButton severity="secondary" (click)="visible = false" ></button>
+        <button label="EDIT" pButton (click)="handleSubmit()" ></button>
+    </div>
+  </form>
+</p-dialog>

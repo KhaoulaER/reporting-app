@@ -1,0 +1,15 @@
+ <!--ADD CLIENT MODAL-->
+ <p-dialog header="Nouvelle Norme" [modal]="true" [(visible)]="visible" [style]="{ height: '300px',width:'570px'}" styleClass="justify-content-center align-items">
+    <form [formGroup]="addNormForm">
+    <div class="field" style="margin-right: 62px;">
+        <label for="designation" class="font-semibold w-6rem">Désignation</label><br/>
+        <input pInputText id="designation" formControlName="designation" class="flex-auto"  autocomplete="off" />
+     
+      <small *ngIf="designation.invalid && (designation.dirty || designation.touched)" class="block p-error">
+        <div *ngIf="designation.errors?.['required']">Ce champs est important!.</div>
+    </small>
+     
+        <button label="Ajouter" pButton (click)="handleAddNorm()" style="margin-left:37px;"></button>
+    </div>
+  </form>
+</p-dialog>

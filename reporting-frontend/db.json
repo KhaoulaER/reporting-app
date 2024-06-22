@@ -1,0 +1,82 @@
+{
+  "users": [
+    {
+      "id": "55f3",
+      "firstName": "Khaoula",
+      "lastName": "Rouimi",
+      "email": "khaoula.rouimipf@gmail.com",
+      "phone": "0649482097",
+      "password": "klkl",
+      "confirmPassword": "klkl",
+      "role": "PROJECT_MANAGER",
+      "idUser": "063c66fd-d9a9-b481-bea4-e881d59ff53f"
+    },
+    {
+      "id": "27a1",
+      "firstName": "Khaoula",
+      "lastName": "Rouimi",
+      "email": "khaoula.rouimipf@gmail.com",
+      "phone": "0649482097",
+      "password": "nmnm",
+      "confirmPassword": "nmnm",
+      "role": "AUDITOR",
+      "idUser": "90a68e1a-015e-09d4-f7f1-4379a20b0ad4"
+    },
+    {
+      "id": "2983",
+      "firstName": "mouna",
+      "lastName": "yacoubi",
+      "email": "moun@gm.com",
+      "phone": "9876543",
+      "password": "mnmn",
+      "confirmPassword": "mnmn",
+      "role": "AUDITOR",
+      "idUser": "11429d01-3a9a-3f6d-fc4b-992e54fb5697"
+    }
+  ],
+  "normes": [
+    {
+      "id": "7585kld",
+      "designation": "ISO 27001"
+    },
+    {
+      "id": "79i5kld",
+      "designation": "ISO 27002"
+    },
+    {
+      "id": "f3968b0b-9ce6-77aa-8f13-38ee41ecd82b",
+      "designation": "nist"
+    },
+    {
+      "id": "99c08ea7-40c0-9f0a-fe58-ffcd9b966d96",
+      "designation": "norm34"
+    }
+  ],
+  "chapitres": [
+    {
+      "id": "77373uiw",
+      "titre": "chapitre1",
+      "norme": {
+        "id": "7585kld",
+        "designation": "ISO 27001"
+      }
+    },
+    {
+      "id": "54er5677",
+      "titre": "chapitre2",
+      "norme": {
+        "id": "7585kld",
+        "designation": "ISO 27001"
+      }
+    }
+  ],
+  "clients": [
+    {
+      "id": "a4deece6-25c3-e54a-9246-c9ed47adf894",
+      "nom": "dtddtdt",
+      "email": "dtdt@fy",
+      "tel": "57687889090",
+      "logo": "codesnipp.png"
+    }
+  ]
+}

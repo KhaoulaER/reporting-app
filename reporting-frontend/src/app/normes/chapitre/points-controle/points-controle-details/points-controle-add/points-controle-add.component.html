@@ -1,0 +1,17 @@
+<p-dialog header="Nouveau point de controle" [modal]="true" [(visible)]="showAddForm" [style]="{ height: '300px',width:'570px'}" styleClass="justify-content-center align-items">
+  <form [formGroup]="addPcForm" >
+      <div class="field">
+          <label for="" class="font-semibold w-6rem">Désignation</label>
+          <input type="text" style="width: 370px;"  pInputText class="p-inputtext" id="designation" formControlName="designation" placeholder="Designation du point de controle" required>
+       </div>  
+       <div class="field">
+          <label for="" class="font-semibold w-6rem">Objectif</label>
+          <input type="text" style="width: 370px;"  pInputText class="p-inputtext" id="objectif" formControlName="objectif" placeholder="Objectif du point de controle" required>
+       </div> 
+       
+       <div class="flex justify-content-center gap-2">
+        <button pButton pRipple  icon="pi pi-check" class="p-button-info ml-2" (click)="handleAddPc()">Ajouter</button>
+        <button pButton pRipple  icon="pi pi-times" class="del-button ml-2" (click)="closeForm()">Annuler</button>
+      </div>
+    </form>
+  </p-dialog>

@@ -1,0 +1,18 @@
+.field-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.field {
+    flex: 1;
+    margin-right: 1rem;
+}
+
+.field:last-child {
+    margin-right: 0;
+}
+form{
+    margin-top: 35px;
+}

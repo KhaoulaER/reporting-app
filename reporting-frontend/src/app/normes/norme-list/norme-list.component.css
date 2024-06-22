@@ -1,0 +1,16 @@
+.chapitreButton{
+    background-color: white;
+    border-color: #E4D00A;
+    color: #E4D00A;
+    border-radius: 10px;
+}
+.chapitreButton:hover{
+    background-color: #E4D00A;
+    color: white;
+    border: #E4D00A;
+}
+.del-button{
+    background-color: #E4D00A;
+    color: white;
+    border-color: #E4D00A;
+}
