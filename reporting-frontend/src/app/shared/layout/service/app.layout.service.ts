@@ -57,7 +57,7 @@ export class LayoutService {
             if (this.updateStyle(config)) {
                 this.changeTheme();
             }
-            this.changeScale(config.scale);
+            //this.changeScale(config.scale);
             this.onConfigUpdate();
         });
     }

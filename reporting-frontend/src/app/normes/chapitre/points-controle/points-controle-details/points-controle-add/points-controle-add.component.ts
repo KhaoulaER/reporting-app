@@ -3,7 +3,6 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { PointsControleService } from '../../points-controle.service';
 import { MessageService } from 'primeng/api';
 import { ActivatedRoute } from '@angular/router';
-import { _ } from 'ag-grid-community';
 import { PointsControle } from '../../../../model/norme';
 
 @Component({

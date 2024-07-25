@@ -12,18 +12,23 @@ import KeycloakAdminClient from 'keycloak-admin';
 export class UsersService {
   constructor(
   private readonly entityManager:EntityManager,
-  
   @InjectRepository(User) private userRepository: Repository<User>,
- // private keycloakService: KeycloakService
+ 
 ){}
   async create(createUserDto: CreateUserDto) {
     const user = new User(createUserDto);
+    user.firstName = createUserDto.firstName;
+    user.lastName = createUserDto.lastName;
+    user.email = createUserDto.email; 
+    user.password = createUserDto.password;
+    user.phone = createUserDto.phone;
+    user.role = createUserDto.role;
     await this.entityManager.save(user);
 
     //AJOUTER L'UTILISATEUR DANS KEYCLOAK
-    //const keycloakUser = await this.keycloakService.createUser(createUserDto);
-    //user.id = keycloakUser.id;
-    //await this.entityManager.save(user);
+    /*const keycloakUser = await this.keycloakService.createUser(createUserDto);
+    user.id = keycloakUser.id;
+    await this.entityManager.save(user);*/
   }
 
   findAll() {
@@ -34,8 +39,8 @@ export class UsersService {
     return this.userRepository.find({where: {role}});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(email:string) {
+    return this.userRepository.findOneBy({email});
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
@@ -43,7 +48,6 @@ export class UsersService {
     user.firstName = updateUserDto.firstName;
     user.lastName = updateUserDto.lastName;
     user.email = updateUserDto.email;
-    user.phone = updateUserDto.phone;
     user.role = updateUserDto.role;
     await this.entityManager.save(user);
     //MODIFIER L'UTILISATEUR DANS KEYCLOAK

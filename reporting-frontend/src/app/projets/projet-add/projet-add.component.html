@@ -1,0 +1,58 @@
+<p-dialog header="Nouveau projet" [modal]="true" [(visible)]="visible" [style]="{ height: '400px',width:'570px'}" styleClass="justify-content-center align-items">
+    <!-- src/app/projet-add/projet-add.component.html -->
+<form [formGroup]="projetForm" (ngSubmit)="onSubmit()">
+  <div style="display: inline-flex; margin-top: 40px;">
+  <div class="field">
+    <label for="designation" class="font-semibold w-6rem">Designation</label>
+    <input pInputText id="designation" class="form-control" style="width: 222px;" formControlName="designation" type="text" placeholder="Designation..."/>
+  </div>
+  <div class="field" style="margin-left: 40px;">
+    <label for="clientId" class="font-semibold w-6rem">Client</label>
+    <select id="clientId" formControlName="client" style="width: 222px;" class="form-control" placeholder="CLient...">
+      <option value="">CLient...</option>
+      <option *ngFor="let client of clients" [value]="client.id">{{ client.nom }}</option>
+    </select>
+  </div>
+  </div>
+  <div class="field" style="margin-top: 20px;">
+    <label class="font-semibold">Normes Adoptées</label>
+    <div class="normes-checkboxes">
+    <div *ngFor="let norme of normes" class="checkbox-item">
+      <input type="checkbox" [value]="norme.id" (change)="onCheckboxChange($event)" />
+      {{ norme.designation }}
+    </div>
+  </div>
+  </div>
+  <button pButton pRipple class="p-button-info btn-save ml-2" icon="pi pi-check" type="submit" label="Enregistrer" style="margin-left: 140px; margin-top: 27px;" [disabled]="projetForm.invalid"></button>
+</form>
+</p-dialog>
+  
+  
+  
+  
+  
+  <!--form [formGroup]="addProjectForm" >
+        <div class="field">
+            <label for="" class="font-semibold w-6rem">Projet</label>
+            <input type="text" style="width: 370px;"  pInputText class="form-control" id="titre" formControlName="designation" placeholder="Projet" required>
+         </div>  
+         <div class="field">
+            <label for="" class="font-semibold w-6rem">Client</label>
+            <p-dropdown type="text" class="form-control" formControlName="client" [options]="clients" optionLabel="nom" placeholder="Sélectionnez un client" >
+
+            </p-dropdown>
+         </div>  
+         <div class="field">
+            <label class="font-semibold w-6rem">Normes</label>
+            <div class="normes-checkboxes">
+              <div *ngFor="let norme of normes" class="checkbox-item">
+                <input type="checkbox" (change)="onNormeChange(norme, $event)" [value]="norme.id" /> {{ norme.designation }}
+              </div>
+            </div>
+          </div>
+            <button pButton pRipple type="submit" class="p-button-info p-button-info ml-2" icon="pi pi-check" label="Enregistrer" style="margin-left:140px;" (click)="handleAddProjet()"></button>
+        
+         
+        
+      </form-->
+    

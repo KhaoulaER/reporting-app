@@ -1,0 +1,12 @@
+<form [formGroup]="addAffectation">
+    <div class="field" style="display: inline-flex;">
+        <label for="auditeur" class="font-semibold w-6rem">Auditeur:</label>
+        <!--p-dropdown [options]="auditors" formControlName="selectedAuditor" optionLabel="firstName" placeholder="selectionner auditeur.."></p-dropdown-->
+        <select id="auditeurId" formControlName="auditeur" style="width: 222px;" class="form-control" placeholder="Auditeur...">
+            <option value="">CLient...</option>
+            <option *ngFor="let auditeur of auditeurs" [value]="auditeur.id">{{ auditeur.firstName }} {{ auditeur.lastName }}</option>
+          </select>
+    <button type="submit" pButton pRipple icon="pi pi-check" label="Ajouter" class="p-button-info ml-2" (click)="onSubmit()"></button>
+    <button type="button" pButton pRipple icon="pi pi-times" label="Annuler" class="p-button-secondary del-button ml-2" (click)="closeAdd()"></button>
+</div>
+</form>

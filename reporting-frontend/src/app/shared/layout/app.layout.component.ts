@@ -65,7 +65,7 @@ export class AppLayoutComponent implements OnDestroy {
             this.menuOutsideClickListener();
             this.menuOutsideClickListener = null;
         }
-        this.unblockBodyScroll();
+        //this.unblockBodyScroll();
     }
 
     hideProfileMenu() {

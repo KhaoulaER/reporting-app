@@ -1,7 +1,7 @@
 import { OnInit } from '@angular/core';
 import { Component } from '@angular/core';
 import { LayoutService } from './service/app.layout.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 @Component({
     selector: 'app-menu',
@@ -10,6 +10,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class AppMenuComponent implements OnInit {
 
     model: any[] = [];
+    managerId:string = '57d1c5dc-887b-3029-19e2-e8ad80a48ce6'
 
     constructor(
         public layoutService: LayoutService,
@@ -26,7 +27,10 @@ export class AppMenuComponent implements OnInit {
              this.updateMenu('PROJECT MANAGER');
          } else if (urlPath.includes('home-admin')) {
              this.updateMenu('ADMIN');
-         } else {
+         }
+         else if (urlPath.includes('home-auditor')) {
+            this.updateMenu('AUDITOR');
+        } else {
              this.updateMenu('DEFAULT');
          }
         
@@ -45,7 +49,7 @@ export class AppMenuComponent implements OnInit {
                     items: [
                         { label: 'Admins', icon: 'pi pi-fw pi-users', routerLink: ['/home-admin/users', 'ADMIN'] },
                         { label: 'Auditeurs', icon: 'pi pi-fw pi-users', routerLink: ['/home-admin/users', 'AUDITOR'] },
-                        { label: 'Chefs des projets', icon: 'pi pi-fw pi-users', routerLink: ['/home-admin/users', 'PROJECT MANAGER'] }
+                        { label: 'Chefs des projets', icon: 'pi pi-fw pi-users', routerLink: ['/home-admin/users', 'PROJECT_MANAGER'] }
                     ]
                 },
                 {
@@ -68,6 +72,31 @@ export class AppMenuComponent implements OnInit {
                     label: 'Clients',
                     items: [
                         { label: 'Clients', icon: 'pi pi-fw pi-clipboard', routerLink: ['/home-manager/clients'] },
+                    ]
+                },
+                {
+                    label: 'Projets',
+                    items: [
+                        {
+                            label: 'Mes projets', icon: 'pi pi-fw pi-clipboard', routerLink: ['/home-manager/projects', this.managerId]                        }
+                    ]
+                }
+               
+                
+            ];
+        }
+        else if(role === 'AUDITOR'){
+            this.model = [
+                {
+                    label: 'Home',
+                    items: [
+                        { label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/home-auditor'] }
+                    ]
+                },
+                {
+                    label: 'Projets',
+                    items: [
+                        { label: 'Projets', icon: 'pi pi-fw pi-clipboard', routerLink: ['/home-auditor/projets-audit'] },
                     ]
                 },
                

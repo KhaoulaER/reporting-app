@@ -18,6 +18,11 @@ export class ChapitresController {
     return this.chapitresService.findAllByNorme(normeId);
   }
 
+  @Get(':normeId/points')
+  findChapitresWithPointsByNorme(@Param('normeId') normeId: string) {
+    return this.chapitresService.findChapitresWithPointsByNorme(normeId);
+  }
+
   @Get()
   findAll() {
     return this.chapitresService.findAll();

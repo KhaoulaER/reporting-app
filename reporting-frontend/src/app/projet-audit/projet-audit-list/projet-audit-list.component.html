@@ -1,0 +1,39 @@
+
+  <p-card [style]="{width: '90%'}" styleClass="justify-content-center align-items-center h-full">
+          
+      <h3 class="ml-3 mt-0">Liste des normes</h3>
+       
+      <p-table class="p-table" [value]="affectations" [paginator]="true" [rows]="5">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>Projet</th>
+              <th>Norme adopté</th>
+              <th>Action</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-affectation>
+            <tr>
+              <td>{{ affectation.projet.designation }}</td>
+              <td>
+                <p-dropdown 
+                  [options]="affectation.projet.normeAdopte" 
+                  optionLabel="norme.designation"
+                  [(ngModel)]="affectation.projet.selectedNormeAdopte"
+                  placeholder="Choisir une norme">
+                </p-dropdown>
+              </td>
+              <td>
+                <button pButton pRipple 
+                  icon="pi pi-eye" 
+                  style="color: white;" 
+                  class="del-button p-button-rounded" 
+                  style="margin-right: 15px;" 
+                  (click)="onAudit(affectation.projet.selectedNormeAdopte)">
+                </button>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-card>
+      
+        

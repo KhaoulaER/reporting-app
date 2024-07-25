@@ -10,7 +10,7 @@ import { UUID } from 'angular2-uuid';
 export class ChapitreService {
 
 
-  private baseUrl = 'http://localhost:3000'; // Remplacez par l'URL de votre API
+  private baseUrl = 'http://localhost:3000/api'; // Remplacez par l'URL de votre API
 
   constructor(private http: HttpClient) { }
 

@@ -4,7 +4,7 @@ import { HomeComponent } from './home/home.component';
 import { UserDetailsComponent } from './user/user-details/user-details.component';
 import { UserAddComponent } from './user/user-details/user-add/user-add.component';
 import { UserListComponent } from './user/user-list/user-list.component';
-import { LoginComponent } from './login/login.component'; 
+import { LoginComponent } from './core/login/login.component'; 
 import { ClientsComponent } from './clients/clients.component';
 import { ProjetsComponent } from './projets/projets.component';
 import { AppLayoutComponent } from './shared/layout/app.layout.component';
@@ -13,6 +13,10 @@ import { NormeListComponent } from './normes/norme-list/norme-list.component';
 import { ChapitreListComponent } from './normes/chapitre/chapitre-list/chapitre-list.component';
 import { PointsControleListComponent } from './normes/chapitre/points-controle/points-controle-list/points-controle-list.component';
 import { ClientsListComponent } from './clients/clients-list/clients-list.component';
+import { AuthGuard } from './guards/auth.guard';
+import { ProjetAuditListComponent } from './projet-audit/projet-audit-list/projet-audit-list.component';
+import { ProjetAuditComponent } from './projet-audit/projet-audit.component';
+import { AuditComponent } from './audit/audit.component';
 
 const routes: Routes = [
   /*{
@@ -34,7 +38,7 @@ const routes: Routes = [
     data: { roles: [Role.PROJECT_MANAGER] } // Données spécifiques à la route
   },*/
   {path: "", component: LoginComponent},
-  {path: "home-admin", component: AppLayoutComponent,children:[
+  {path: "home-admin", component: AppLayoutComponent, /*canActivate: [AuthGuard], data: {roles: ['ADMIN']},*/ children:[
     {path: "", component: HomeComponent},
     {path:"clients",component:ClientsListComponent},
     {path: "users", component: UserListComponent},
@@ -43,9 +47,15 @@ const routes: Routes = [
     {path: "chapitre/:normeId", component: ChapitreListComponent},
     {path: "pc/:chapitreId", component:PointsControleListComponent}
   ]},
-  {path: "home-manager", component: AppLayoutComponent, children:[
+  {path: "home-manager", component: AppLayoutComponent, /*canActivate: [AuthGuard], data: {roles: ['PROJECT MANAGER']},*/children:[
     {path: "clients", component: ClientsListComponent},
-    {path: "", component: ProjetsComponent},
+    {path: "audit-manager/:normeId", component:AuditComponent},
+    {path: "projects/:managerId", component: ProjetsComponent},
+  ]},
+  {path: "home-auditor", component: AppLayoutComponent, /*canActivate: [AuthGuard], data: {roles: ['AUDITOR']}, */children:[
+    {path: "", component: ProjetAuditComponent},
+    {path: "projets-audit", component: ProjetAuditListComponent},
+    { path: 'audit/:normeId', component: AuditComponent },
   ]}
   
 ];

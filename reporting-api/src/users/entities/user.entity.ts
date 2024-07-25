@@ -3,16 +3,16 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 export enum Role{
     AUDITOR='AUDITOR',
-    PROJECT_MANAGER='PROJECT MANAGER',
+    PROJECT_MANAGER='PROJECT_MANAGER',
     ADMIN='ADMIN',
 }
 @Entity()
 export class User {
     @PrimaryGeneratedColumn('uuid')
     id:string;
-    @Column()
+    @Column({ default: '' })
     firstName: string;
-    @Column()
+    @Column({ default: '' })
     lastName: string;
     @Column()
     email: string;
@@ -25,8 +25,7 @@ export class User {
         enum: Role,
       })
       role: Role;
-      @Column({ nullable: true })
-      photo: string;
+      
 
       constructor(user: Partial<User>){
         Object.assign(this, user);

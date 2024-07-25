@@ -3,31 +3,31 @@
     <p-card header="Ajouter un nouvel utilisateur" [style]="{width: '660px'}">
         
             <div class="field">
-                <label for="penom">Prénom</label><br>
+                <label for="pelastName">firstName</label><br>
                 <input 
                     type="text" 
                     pInputText  
-                    formControlName="prenom" 
-                    class="w-full" name="prenom"  
-                    placeholder="Prénom"  
+                    formControlName="firstName" 
+                    class="w-full" name="firstName"  
+                    placeholder="firstName"  
                  />
             </div>
-            <small *ngIf="prenom.invalid && (prenom.dirty || prenom.touched)" class="block p-error">
-                <div *ngIf="prenom.errors?.['required']">Prénom est obligatoire.</div>
-                <div *ngIf="prenom.errors?.['pattern']">Entrez un prénom valide</div>
+            <small *ngIf="firstName.invalid && (firstName.dirty || firstName.touched)" class="block p-error">
+                <div *ngIf="firstName.errors?.['required']">firstName est obligatoire.</div>
+                <div *ngIf="firstName.errors?.['pattern']">Entrez un firstName valide</div>
             </small>
             <div class="field">
-                <label for="nom">Nom</label><br>
+                <label for="lastName">lastName</label><br>
                 <input 
                     type="text" pInputText 
-                    formControlName="nom" 
-                    class="w-full" name="nom" 
-                    placeholder="Type your nom"  
+                    formControlName="lastName" 
+                    class="w-full" name="lastName" 
+                    placeholder="Type your lastName"  
                 />
             </div>
-            <small *ngIf="nom.invalid && (nom.dirty || nom.touched)" class="block p-error">
-                <div *ngIf="nom.errors?.['required']">Nom est obligatoire.</div>
-                <div *ngIf="nom.errors?.['pattern']">Entrez un nom valide</div>
+            <small *ngIf="lastName.invalid && (lastName.dirty || lastName.touched)" class="block p-error">
+                <div *ngIf="lastName.errors?.['required']">lastName est obligatoire.</div>
+                <div *ngIf="lastName.errors?.['pattern']">Entrez un lastName valide</div>
             </small>
         
         <div class="field">

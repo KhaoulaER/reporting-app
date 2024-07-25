@@ -9,7 +9,7 @@ import { Observable, map, of } from 'rxjs';
 })
 export class UserService {
 
-  private baseUrl = "http://localhost:3000";
+  private baseUrl = "http://localhost:3000/api";
 
   constructor(private http:HttpClient) { }
 

@@ -29,6 +29,12 @@ export class ChapitresService {
     return this.chapitreRepository.find({where: { norme: { id: normeId } }});
   }
 
+  async findChapitresWithPointsByNorme(normeId: string): Promise<Chapitre[]> {
+    return this.chapitreRepository.find({
+      where: { norme: { id: normeId } },
+      relations: ['pointsControle','pointsControle.preuve'],
+    });
+  }
   findAll() {
     return `This action returns all chapitres`;
   }

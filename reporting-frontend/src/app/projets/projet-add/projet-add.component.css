@@ -1,0 +1,14 @@
+.normes-checkboxes {
+    
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.checkbox-item {
+    margin-right: 10px;
+}
+.btn-save{
+    justify-content: center;
+    margin-left: 40%;
+}

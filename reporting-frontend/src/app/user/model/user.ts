@@ -1,7 +1,7 @@
 export enum Role {
     ADMIN = 'ADMIN',
     AUDITOR = 'AUDITOR',
-    PROJECT_MANAGER = 'PROJECT MANAGER',
+    PROJECT_MANAGER = 'PROJECT_MANAGER',
 }
 
 export interface User {
@@ -10,8 +10,8 @@ export interface User {
     lastName: string,
     email: string,
     password: string,
+    username: string,
     phone: string,
-    photo: String[],
     role: Role
 }
 

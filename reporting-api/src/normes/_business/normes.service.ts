@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateNormeDto } from '../dto/create-norme.dto'; 
 import { UpdateNormeDto } from '../dto/update-norme.dto'; 
 import { Norme } from '../entities/norme.entity'; 
-import { EntityManager, Repository } from 'typeorm';
+import { EntityManager, In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
@@ -16,6 +16,19 @@ export class NormesService {
     await this.entityManager.save(norme);
   }
 
+  async findByProjet(projetId:string): Promise<Norme[]>{
+    return await this.normeRepository.query(
+      'SELECT * FROM "norme" n JOIN "norme_adopte" na ON n.id = na."normeId" WHERE na."projetId" = $1',
+      [projetId]
+    )
+  }
+  async findByIds(ids: string[]): Promise<Norme[]> {
+    return this.normeRepository.find({
+      where: {
+        id: In(ids)
+      }
+    });
+  }
   async findAll() {
     return this.normeRepository.find();
   }

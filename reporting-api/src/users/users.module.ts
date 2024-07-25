@@ -8,8 +8,7 @@ import { Repository } from 'typeorm';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
-   // KeycloakModule
+    TypeOrmModule.forFeature([User])
 ],
   controllers: [UsersController],
   providers: [UsersService],

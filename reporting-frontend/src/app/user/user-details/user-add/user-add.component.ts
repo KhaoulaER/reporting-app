@@ -33,8 +33,8 @@ export class UserAddComponent implements OnInit{
 
   createForm() {
     this.userFormGroup = this.fb.group({
-    prenom: ['',[Validators.required, Validators.pattern(/^[a-zA-Z]+(?: [a-zA-Z]+)*$/)]],
-    nom: ['',[Validators.required, Validators.pattern(/^[a-zA-Z]+(?: [a-zA-Z]+)*$/)]],
+    firstName: ['',[Validators.required, Validators.pattern(/^[a-zA-Z]+(?: [a-zA-Z]+)*$/)]],
+    lastName: ['',[Validators.required, Validators.pattern(/^[a-zA-Z]+(?: [a-zA-Z]+)*$/)]],
     email: ['', [Validators.required, Validators.email]],
     phone: ['', [Validators.required]],
     password: ['',[Validators.required]],
@@ -58,7 +58,8 @@ export class UserAddComponent implements OnInit{
         console.log(response);
         this.userFormGroup.reset();
         this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Register Successfully' });
-        this.router.navigate(['']);  
+        //this.router.navigate(['']);  
+        this.ngOnInit();
       },
       error => {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Something went wrong' });
@@ -69,11 +70,11 @@ export class UserAddComponent implements OnInit{
 
   
 
-  get prenom(){
-    return this.userFormGroup.controls['prenom'];
+  get firstName(){
+    return this.userFormGroup.controls['firstName'];
   }
-  get nom(){
-    return this.userFormGroup.controls['nom'];
+  get lastName(){
+    return this.userFormGroup.controls['lastName'];
   }
    get email(){
     return this.userFormGroup.controls['email'];

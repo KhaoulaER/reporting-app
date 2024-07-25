@@ -1,0 +1,28 @@
+<!--p-dialog header="Preuves pour {{ pointControle?.designation }}" [(visible)]="visible" [modal]="true" [style]="{width: '50vw'}">
+    <h2></h2>
+    <form [formGroup]="preuveForm">
+      <div formArrayName="preuves" *ngIf="pointControle">
+        <div *ngFor="let preuveCtrl of preuves.controls; let i = index" class="field-checkbox">
+            <p-checkbox 
+                [formControlName]="i"/>{{ pointControle.preuve[i].designation }}
+            
+          </div>
+      </div>
+      <textarea
+        rows="4" 
+        cols="50" 
+        formControlName="commentaire"
+        placeholder="Ajouter un commentaire"
+        pInputTextarea 
+        ></textarea><br>
+      <button pButton type="button" label="Valider" (click)="submit()"></button>
+    </form>
+  </p-dialog-->
+
+     
+      <div *ngFor="let preuve of preuveData" class="form-check">
+        <input type="checkbox" [value]="preuve" class="form-check-input">
+        <label class="form-check-label">{{ preuve.designation }}</label>
+      </div>
+  
+  

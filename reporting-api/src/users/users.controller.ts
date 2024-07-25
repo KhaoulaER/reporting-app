@@ -17,10 +17,7 @@ export class UsersController {
   @Post()
   @UseInterceptors(FileInterceptor('photo', multerOptions))
   create(@Body() createUserDto: CreateUserDto, @UploadedFile() photo:Express.Multer.File) {
-    if(photo){
-      createUserDto.photo = photo.filename;
-    }
-    
+   
     return this.usersService.create(createUserDto);
   }
 
@@ -36,7 +33,7 @@ export class UsersController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+    return this.usersService.findOne(id);
   }
 
   @Patch(':id')

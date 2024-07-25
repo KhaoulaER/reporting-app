@@ -8,5 +8,4 @@ export class CreateUserDto {
     readonly password:string
     readonly phone:string
     readonly role:Role
-     photo:string
 }

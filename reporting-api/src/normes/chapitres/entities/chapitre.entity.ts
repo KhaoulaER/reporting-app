@@ -1,5 +1,6 @@
 import { Norme } from "src/normes/entities/norme.entity";
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { PointsControle } from "../points-controle/entities/points-controle.entity";
 
 @Entity()
 export class Chapitre {
@@ -12,6 +13,10 @@ export class Chapitre {
     @ManyToOne(()=> Norme, {cascade: true, onDelete: 'CASCADE'})
     @JoinColumn()
     norme: Norme
+
+    @OneToMany(() => PointsControle, pointsControle => pointsControle.chapitre)
+    pointsControle: PointsControle[];
+    
     constructor(chapitre: Partial<Chapitre>){
         Object.assign(this, chapitre);
     }

@@ -78,5 +78,65 @@
       "tel": "57687889090",
       "logo": "codesnipp.png"
     }
+  ],
+  "projets": [
+    {
+      "id": "ruweo43249203",
+      "designation": "audit tt",
+      "date": "6/25/2024",
+      "user": {
+        
+          "id": "27a1",
+          "firstName": "Khaoula",
+          "lastName": "Rouimi",
+          "email": "khaoula.rouimipf@gmail.com",
+          "phone": "0649482097",
+          "password": "nmnm",
+          "confirmPassword": "nmnm",
+          "role": "PROJECT_MANAGER",
+          "idUser": "90a68e1a-015e-09d4-f7f1-4379a20b0ad4"
+        
+      },
+      "clients": {
+        "id": "a4deece6-25c3-e54a-9246-c9ed47adf894",
+        "nom": "dtddtdt",
+        "email": "dtdt@fy",
+        "tel": "57687889090",
+        "logo": "codesnipp.png"
+      }
+    }
+  ],
+  "norme_adopte":[
+    {
+      "projets": {
+        "id": "ruweo43249203",
+      "designation": "audit tt",
+      "date": "6/25/2024",
+      "user": {
+        
+          "id": "27a1",
+          "firstName": "Khaoula",
+          "lastName": "Rouimi",
+          "email": "khaoula.rouimipf@gmail.com",
+          "phone": "0649482097",
+          "password": "nmnm",
+          "confirmPassword": "nmnm",
+          "role": "PROJECT_MANAGER",
+          "idUser": "90a68e1a-015e-09d4-f7f1-4379a20b0ad4"
+        
+      },
+      "clients": {
+        "id": "a4deece6-25c3-e54a-9246-c9ed47adf894",
+        "nom": "dtddtdt",
+        "email": "dtdt@fy",
+        "tel": "57687889090",
+        "logo": "codesnipp.png"
+        }
+      },
+      "norme": {
+        "id": "7585kld",
+        "designation": "ISO 27001"
+      }
+    }
   ]
 }

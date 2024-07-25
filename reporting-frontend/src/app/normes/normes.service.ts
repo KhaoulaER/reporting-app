@@ -9,7 +9,7 @@ import { UUID } from 'angular2-uuid';
 })
 export class NormesService {
 
-  private baseUrl = "http://localhost:3000";
+  private baseUrl = "http://localhost:3000/api";
   constructor(private http: HttpClient) { }
 
   addNewNorm(norm:Norme){

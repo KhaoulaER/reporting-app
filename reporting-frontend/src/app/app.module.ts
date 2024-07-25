@@ -8,6 +8,7 @@ import { UserDetailsComponent } from './user/user-details/user-details.component
 import { UserAddComponent } from './user/user-details/user-add/user-add.component';
 import { HomeComponent } from './home/home.component';
 
+import { CheckboxModule } from 'primeng/checkbox';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { DropdownModule } from 'primeng/dropdown';
@@ -30,10 +31,9 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { UserListComponent } from './user/user-list/user-list.component';
 import { RoleListComponent } from './user/user-list/role-list/role-list.component';
 import { CommonModule } from '@angular/common';
-import { LoginComponent } from './login/login.component'; 
+import { LoginComponent } from './core/login/login.component'; 
 import { ClientsComponent } from './clients/clients.component';
 import { ProjetsComponent } from './projets/projets.component';
-import { AgGridModule } from 'ag-grid-angular';
 import { AppLayoutModule } from './shared/layout/app.layout.module';
 import { UserActionComponent } from './user/user-list/user-action/user-action.component';
 import { UserUpdateComponent } from './user/user-list/user-action/user-update/user-update.component';
@@ -58,8 +58,23 @@ import { PreuveAddComponent } from './normes/chapitre/points-controle/preuve/pre
 import { ClientsListComponent } from './clients/clients-list/clients-list.component';
 import { ClientsAddComponent } from './clients/clients-add/clients-add.component';
 import { ClientsUpdateComponent } from './clients/clients-list/clients-action/clients-update/clients-update.component';
+import { ProjetAuditComponent } from './projet-audit/projet-audit.component';
+import { ProjetAuditListComponent } from './projet-audit/projet-audit-list/projet-audit-list.component';
+import { NormeAdopteComponent } from './projet-audit/norme-adopte/norme-adopte.component';
+import { NormeAdopteListComponent } from './projet-audit/norme-adopte/norme-adopte-list/norme-adopte-list.component';
+import { AuditComponent } from './audit/audit.component';
+import { PreuveAuditComponent } from './audit/preuve-audit/preuve-audit.component';
+import { AuditValidationComponent } from './audit/audit-validation/audit-validation.component';
+import { RapportComponent } from './rapport/rapport.component';
+import { AuditHeadComponent } from './audit/audit-head/audit-head.component';
+import { ConformiteComponent } from './audit/conformite/conformite.component';
+import { PcAuditComponent } from './audit/pc-audit/pc-audit.component';
+import { ProjetAddComponent } from './projets/projet-add/projet-add.component';
+import { ProjetListComponent } from './projets/projet-list/projet-list.component';
+import { ProjetNormeComponent } from './projets/projet-list/projet-norme/projet-norme.component';
+import { AffectationComponent } from './projets/affectation/affectation.component';
+import { AffectationAddComponent } from './projets/affectation/affectation-add/affectation-add.component';
 
-//KEYCLOAK CONFIGURATION
 
 
 @NgModule({
@@ -95,6 +110,22 @@ import { ClientsUpdateComponent } from './clients/clients-list/clients-action/cl
     ClientsListComponent,
     ClientsAddComponent,
     ClientsUpdateComponent,
+    ProjetAuditComponent,
+    ProjetAuditListComponent,
+    NormeAdopteComponent,
+    NormeAdopteListComponent,
+    AuditComponent,
+    PreuveAuditComponent,
+    AuditValidationComponent,
+    RapportComponent,
+    AuditHeadComponent,
+    ConformiteComponent,
+    PcAuditComponent,
+    ProjetAddComponent,
+    ProjetListComponent,
+    ProjetNormeComponent,
+    AffectationComponent,
+    AffectationAddComponent
      ],
   imports: [
     BrowserModule,
@@ -111,12 +142,12 @@ import { ClientsUpdateComponent } from './clients/clients-list/clients-action/cl
     PanelModule,
     FileUploadModule,
     PasswordModule,
+    CheckboxModule,
     TableModule,
     SidebarModule,
     ReactiveFormsModule,
     HttpClientModule,
     CommonModule,
-    AgGridModule, 
     ToolbarModule,
     DialogModule,
     FormsModule,
@@ -127,9 +158,6 @@ import { ClientsUpdateComponent } from './clients/clients-list/clients-action/cl
     provideClientHydration(),
     MessageService,
     ConfirmationService,
-    //In order to make sure Keycloak is 
-    //initialized when the application is bootstrapped I
-    //will have to add an APP_INITIALIZER provider to AppModule
     
   ],
   bootstrap: [AppComponent]

@@ -39,6 +39,7 @@ services:
       - KEYCLOAK_ADMIN_PASSWORD=12345678
       - DB_VENDOR = postgres
       - DB_ADDR = db
+      - DB_DATABASE=grc
       - DB_USER=postgres
       - DB_PASSWORD=postgres
       - DB_SCHEMA= public

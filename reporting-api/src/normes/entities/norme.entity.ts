@@ -1,4 +1,5 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Chapitre } from "../chapitres/entities/chapitre.entity";
 
 @Entity()
 export class Norme {
@@ -6,7 +7,8 @@ export class Norme {
     id:string;
     @Column()
     designation: string;
-    
+    @OneToMany(() => Chapitre, chapitre => chapitre.norme)
+    chapitre: Chapitre[];
 
     constructor(norme: Partial<Norme>){
         Object.assign(this, norme);

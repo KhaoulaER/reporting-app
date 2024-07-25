@@ -9,7 +9,7 @@ import { Observable } from 'rxjs';
 })
 export class ClientsService {
 
-  private baseUrl = "http://localhost:3000";
+  private baseUrl = "http://localhost:3000/api";
   constructor(private http: HttpClient) { }
   /*addNewClient(client:Client){
     client.id = UUID.UUID();
