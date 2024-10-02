@@ -1,0 +1,73 @@
+
+<div class="p-toolbar-group-start" style="margin-bottom: 20px;">
+    <button
+      pButton
+      pRipple
+      label="New"
+      style="margin-right: 5px;"
+      icon="pi pi-plus"
+      class="p-button-info mr-2"
+      (click)="showAddForm = true" 
+    ></button>
+  </div>
+<p-card [style]="{width: '90%'}" styleClass="justify-content-center align-items-center">
+    
+    <h3 class="ml-3 mt-0">Liste des points de controle</h3>
+
+    
+    <p-table [value]="pcs" [paginator]="true" [rows]="5">
+        <ng-template pTemplate="header">
+        <tr>
+            <th>Point de controle</th>
+            <th>Objectif</th>
+            <!--th>Preuves</th-->
+            <th>Action</th>
+        </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-pc>
+        <tr>
+            <td>{{ pc.designation }}</td>
+            <td>{{ pc.objectif }}</td>
+            <!--td><button
+              pButton
+              pRipple
+              label="Preuves"
+              style="margin-right: 5px; border-color: #30D5C8; color: #30D5C8; background-color: white;"
+              class="p-button-info mr-2"
+              (click)="handleShowPreuves(pc)" 
+            ></button></td-->
+            <td><button  pButton pRipple icon="pi pi-trash" class="del-button p-button-rounded" (click)="handleDeletePc(pc)" style="margin-right: 15px;"></button><button severity="secondary" pButton pRipple (click)="handleEditPc(pc)" icon="pi pi-pencil" class="p-button-info p-button-rounded"></button></td>
+        </tr>
+        </ng-template>
+    </p-table>
+    </p-card>
+    
+<!-- Formulaire d'ajout de pc -->
+<app-points-controle-add
+[showAddForm]="showAddForm"
+(clickClose)="cancelAdd($event)"
+(clickAdd)="savePc($event)"
+></app-points-controle-add>
+
+<!--Formulaire de modification-->
+<app-points-controle-update
+[display]="display"
+[selectedPc]="selectedPc"
+(clickCloseMod)="cancelUpdate"
+(clickAddMod)="updatePc($event)"
+>
+
+</app-points-controle-update>
+
+<!--Gesttion des preuves-->
+<app-preuve-list
+  [showPreuves]="showPreuves"
+  [selectedPcc]="selectedPcc"
+  (clickClose)="cancelPreuves($event)"
+>
+
+</app-preuve-list>
+        
+<!--Confirmer la suppression-->
+<p-confirmDialog header="Delete" icon="pi pi-exclamation-triangle"></p-confirmDialog>
+  <p-toast position="bottom-right"></p-toast>

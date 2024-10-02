@@ -1,0 +1,35 @@
+<!-- Chapitre Audit Component HTML -->
+<div style="display: inline-flexbox;">
+  <input type="text" pInputText class="form-control" value="Conformité: {{conformiteNorme * 100}} %" disabled style="width: 250px; border: 20px; height: 40px;">
+  <button pButton class="btn btn-graph" label="Visualisation graphique" (click)="showChart()"></button>
+</div>
+
+<p-table class="p-table table-bordered" [value]="results" [paginator]="true" [rows]="5" styleClass="p-datatable-striped p-datatable-gridlines">
+  <ng-template pTemplate="header" class="header">
+    <tr class="entete" style="background-color: #E4D00A; color: #fff;">
+      <th>Chapitre</th>
+      <th>Nombre de questions</th>  
+      <th *ngFor="let niveau of normeAdopte?.norme?.echel === '0->3' ? niveauT : niveauMaturite">
+        {{ niveau }}
+      </th>
+      <th>Niveau de maturité</th>
+      <th>Niveau de maturité cible</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-conf>
+    <tr>
+      <td>{{ conf.chapitre }}</td>
+      <td>{{ conf.nombre_pc_audit }}</td>
+      <td *ngFor="let niveau of conf.result">{{ niveau.nb_pc_audit }}</td>
+      <td>{{ conf.conformite * 100 }}%</td>
+      <td>{{ nvCible }}%</td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<!-- Radar chart inside a centered modal -->
+<p-dialog header="Graphe de conformité" [modal]="true" [(visible)]="showChartModal" styleClass="chart-dialog" [style]="{height: '750px', width: '850px'}">
+  <div class="chart-container" style="display: flex;justify-content: center;align-items: center; height: 555px; width: 740px;">
+    <p-chart type="radar" height="555px" width="740px" [data]="radarChartData" [options]="radarChartOptions"></p-chart>
+  </div>
+</p-dialog>

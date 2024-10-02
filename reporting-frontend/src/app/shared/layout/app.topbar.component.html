@@ -13,17 +13,21 @@
     </button>
 
     <div #topbarmenu class="layout-topbar-menu" [ngClass]="{'layout-topbar-menu-mobile-active': layoutService.state.profileSidebarVisible}">
-        <button class="p-link layout-topbar-button">
-            <i class="pi pi-calendar"></i>
-            <span>Calendar</span>
+        <button class="p-link layout-topbar-button" (click)="handleLogOut()">
+            <i class="pi pi-sign-out" style="color:red;"></i>
+            <span>Déconnexion</span>
         </button>
         <button class="p-link layout-topbar-button">
             <i class="pi pi-user"></i>
-            <!--span>{{authService.authenticatedUser.email}}</span-->
+            <span>{{email}}</span>
         </button>
-        <button class="p-link layout-topbar-button" [routerLink]="'/documentation'">
+        <button class="p-link layout-topbar-button" (click)="handleChangePwd()">
             <i class="pi pi-cog"></i>
             <span>Settings</span>
         </button>
     </div>
 </div>
+<app-credential-change
+    [visible]="visible"
+    (clickAdd)="onUpdate($event)">
+</app-credential-change>

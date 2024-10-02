@@ -18,7 +18,9 @@ export class PcAudit {
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP'})
     createdAt: Date;
     @Column({nullable:true})
-    commentaire: string;
+    preuve: string;
+    @Column({nullable:true})
+    recommandation: string
     @ManyToOne(() => Audit, {cascade: true, onDelete: 'CASCADE', eager: true })
     @JoinColumn()
     audit: Audit;

@@ -1,9 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, NotFoundException, UseGuards, UseInterceptors, Req } from '@nestjs/common';
 import { NormeAdopteService } from './_business/norme-adopte.service'; 
 import { CreateNormeAdopteDto } from './dto/create-norme-adopte.dto';
 import { UpdateNormeAdopteDto } from './dto/update-norme-adopte.dto';
+import { AuthGuard } from 'nest-keycloak-connect';
+import { Groups } from 'src/decos/roles.decorator';
+import { RolesGuard } from 'src/gurads/roles.guard';
+//import { AuthInterceptor } from 'src/iam/interceptor/auth.interceptor';
 
 @Controller('norme-adopte')
+//@UseGuards(RolesGuard)
+//@Groups('/PROJECT_MANAGER')
+//@UseInterceptors(AuthInterceptor)
 export class NormeAdopteController {
   constructor(private readonly normeAdopteService: NormeAdopteService) {}
 
@@ -24,7 +31,7 @@ export class NormeAdopteController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.normeAdopteService.findOne(+id);
+    return this.normeAdopteService.findOne(id);
   }
 
   @Patch(':id')
@@ -52,4 +59,6 @@ export class NormeAdopteController {
   remove(@Param('id') id: string) {
     return this.normeAdopteService.remove(+id);
   }
+
+  
 }

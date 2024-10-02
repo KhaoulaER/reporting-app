@@ -9,6 +9,8 @@ export class Audit {
     id: string;
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP'})
     date_audit: Date
+    @Column({default: false})
+    control: boolean
     @ManyToOne(()=>User, {cascade: true, onDelete: 'CASCADE'})
     @JoinColumn()
     auditeur: User;

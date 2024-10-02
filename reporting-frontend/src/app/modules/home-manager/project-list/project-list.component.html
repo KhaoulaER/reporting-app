@@ -1,0 +1,34 @@
+<p-card [style]="{width: '70%'}" *ngIf="displayProList" styleClass="justify-content-center align-items-center">
+        
+    <h3 class="ml-3 mt-0">Projets non validés</h3>
+     
+    <p-table class="p-table table-bordered pro-table" styleClass="p-datatable-striped" 
+    [tableStyle]="{'min-width': '50rem'}" [value]="proDetails" [paginator]="true" [rows]="5">
+        <ng-template pTemplate="header">
+          <tr>
+            <th></th>
+            <th>Projet</th>
+            <th>Norme</th>
+            <th>Audit</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-pro>
+          <tr>
+            <td></td>
+            <td>{{ pro?.designation }}</td>
+            <td><ng-container *ngFor="let normeAdopte of pro?.normeAdopte">
+                {{ normeAdopte?.norme?.designation }}
+              </ng-container></td>
+            <!--td><button pButton class="projetButton" [routerLink]="['/home/projets',norm.id]">Chapitre</button></td-->
+            <td>
+                <ng-container *ngFor="let normeAdopte of pro?.normeAdopte">
+                    <button pButton pRipple style="color: white;" class="del-button c-btn p-button-rounded"
+                      [routerLink]="['/home-manager/audit-manager', normeAdopte?.id]" style="margin-right: 15px;">
+                      Audit
+                    </button>
+                  </ng-container>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-card>

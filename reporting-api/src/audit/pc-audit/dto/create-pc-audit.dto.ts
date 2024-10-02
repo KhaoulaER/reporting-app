@@ -7,6 +7,7 @@ export class CreatePcAuditDto {
     readonly niveau_maturite: string
     readonly constat: string
     readonly audit: Audit
-    readonly commentaire:string
+    readonly preuve:string
+    readonly recommandation:string
     //readonly preuvesVerifies: Preuve[];
 }

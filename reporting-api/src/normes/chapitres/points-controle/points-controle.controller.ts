@@ -1,9 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors } from '@nestjs/common';
 import { PointsControleService } from './_business/points-controle.service'; 
 import { CreatePointsControleDto } from './dto/create-points-controle.dto';
 import { UpdatePointsControleDto } from './dto/update-points-controle.dto';
+import { AuthGuard } from 'nest-keycloak-connect';
+import { RolesGuard } from 'src/gurads/roles.guard';
+//import { AuthInterceptor } from 'src/iam/interceptor/auth.interceptor';
+import { Groups } from 'src/decos/roles.decorator';
 
 @Controller('points-controle')
+//@UseGuards(RolesGuard)
+//@Groups('/ADMIN')
+//@UseInterceptors(AuthInterceptor)
 export class PointsControleController {
   constructor(private readonly pointsControleService: PointsControleService) {}
 

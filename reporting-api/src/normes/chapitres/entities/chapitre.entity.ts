@@ -8,7 +8,7 @@ export class Chapitre {
     id:string;
     @Column()
     titre:string
-    @Column()
+    @Column({default:null})
     description:string
     @ManyToOne(()=> Norme, {cascade: true, onDelete: 'CASCADE'})
     @JoinColumn()

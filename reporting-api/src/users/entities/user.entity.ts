@@ -10,6 +10,8 @@ export enum Role{
 export class User {
     @PrimaryGeneratedColumn('uuid')
     id:string;
+    @Column({ type: 'uuid', unique: true, nullable:true })
+    keycloakId: string;  // Stocker l'ID Keycloak
     @Column({ default: '' })
     firstName: string;
     @Column({ default: '' })
@@ -20,12 +22,7 @@ export class User {
     password: string
     @Column()
     phone: string;
-    @Column({
-        type: 'enum',
-        enum: Role,
-      })
-      role: Role;
-      
+
 
       constructor(user: Partial<User>){
         Object.assign(this, user);

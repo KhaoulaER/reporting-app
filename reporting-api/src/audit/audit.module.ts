@@ -12,5 +12,6 @@ import { PcAudit } from './pc-audit/entities/pc-audit.entity';
   imports: [TypeOrmModule.forFeature([Audit,NormeAdopte,User,PcAudit]), AuditModule, PcAuditModule],
   controllers: [AuditController],
   providers: [AuditService],
+  exports: [AuditService]
 })
 export class AuditModule {}

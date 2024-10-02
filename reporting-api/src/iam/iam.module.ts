@@ -12,6 +12,8 @@ import { RefreshTokenUseCase } from './_use-case/refresh-token/refreshtoken-use_
 import { SendResetCodeUseCase } from './_use-case/send-reset-code/send-code.use-case';
 import { UpdatePasswordUseCase } from './_use-case/update-password/update-password_case';
 import { VerifyUserUseCase } from './_use-case/verify-user/verify-code.use-case';
+import { KeycloakService } from './_business/keycloak/keycloak/keycloak.service';
+import { LogOutUseCase } from './_use-case/logout/logout-use_case';
 
 @Module({
     imports: [SharedModule, KeycloakServiceModule, HttpModule, /*forwardRef(() => UserModule),*/],
@@ -20,13 +22,15 @@ import { VerifyUserUseCase } from './_use-case/verify-user/verify-code.use-case'
     LogInUseCase,
     ValidateTokenoUseCase,
     RefreshTokenUseCase,
-    //LogOutUseCase,
+    LogOutUseCase,
     GetPasswordPolicyUseCase,
     UpdatePasswordUseCase,
     AuthenticationService,
     ConfigService,
     VerifyUserUseCase,
-    SendResetCodeUseCase
+    SendResetCodeUseCase,
+    KeycloakService
   ],
+  exports: [KeycloakService]
 })
 export class IamModule {}

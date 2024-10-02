@@ -8,6 +8,8 @@ export class Affectation {
     id: string;
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP'})
     date_affectation: Date;
+    @Column({default: ''})
+    droit: string;
     @ManyToOne(()=>User, {cascade: true, onDelete: 'CASCADE'})
     @JoinColumn()
     auditeur: User;

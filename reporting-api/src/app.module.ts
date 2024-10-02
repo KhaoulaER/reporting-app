@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { KeycloakConnectModule } from 'nest-keycloak-connect'; 
@@ -15,6 +15,13 @@ import { SharedModule } from './shared/shared.module';
 import { ProjetsModule } from './projets/projets.module';
 import { AffectationModule } from './affectation/affectation.module';
 import { AuditModule } from './audit/audit.module';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { RolesGuard } from './gurads/roles.guard';
+import { AuthGuard } from './gurads/auth.guard';
+import { JwtModule, JwtService } from '@nestjs/jwt';
+import { AuthenticationService } from './iam/_business/authentification.service';
+import { AuthInterceptor } from './iam/interceptor/auth.interceptor';
+import { AuditService } from './audit/_business/audit.service';
 
 const keyCloakOptionsProvider = {
   provide: 'keyCloakDataProvider',
@@ -40,11 +47,19 @@ const keyCloakOptionsProvider = {
     SharedModule,
     ProjetsModule,
     AffectationModule,
-    AuditModule
+    AuditModule,
+  
   ],
   controllers: [AppController],
   providers: [AppService, 
-    KeycloakServiceModule
+    AuthGuard,
+    RolesGuard,
+    //vJwtService,
+    
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: AuthInterceptor,
+    },
     ],
 })
 export class AppModule {}

@@ -1,10 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UseInterceptors } from '@nestjs/common';
 import { NormesService } from './_business/normes.service'; 
 import { CreateNormeDto } from './dto/create-norme.dto';
 import { UpdateNormeDto } from './dto/update-norme.dto';
 import { Norme } from './entities/norme.entity';
+import { AuthGuard } from 'nest-keycloak-connect';
+import { RolesGuard } from 'src/gurads/roles.guard';
+import { Groups } from 'src/decos/roles.decorator';
+//import { AuthInterceptor } from 'src/iam/interceptor/auth.interceptor';
 
 @Controller('normes')
+//@UseGuards(RolesGuard)
+//@Groups('/ADMIN')
+//@UseInterceptors(AuthInterceptor)
 export class NormesController {
   constructor(private readonly normesService: NormesService) {}
 

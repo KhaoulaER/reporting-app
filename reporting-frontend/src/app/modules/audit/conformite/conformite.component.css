@@ -1,0 +1,32 @@
+.entete{
+    background-color: #E4D00A;
+     color: #fff;
+}
+.btn-graph{
+    background-color: #E4D00A;
+    color: #fff;
+    border-radius: 15px;
+    margin-left: 76%;
+   margin-top: -30px;
+    width: 190px;
+}
+
+  /* Styles for centering and resizing the radar chart */
+.chart-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 90%;
+}
+
+.chart-dialog .ui-dialog-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+p-chart {
+  width: 90%;  /* Adjust this value to control the chart size */
+  height: 90%;  /* Adjust this value to control the chart size */
+}

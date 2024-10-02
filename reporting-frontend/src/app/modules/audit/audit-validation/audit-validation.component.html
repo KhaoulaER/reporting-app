@@ -1,0 +1,2 @@
+<button pButton (click)="onValidateClick()" icon="pi pi-check" class="btn validation-btn" [disabled]="isValidateButtonClicked" *ngIf="!normeAdopte?.validation">Valider</button>
+<button pButton icon="pi pi-replay" label="Réinitialiser audit" class="btn validation-btn" *ngIf="normeAdopte?.validation" (click)="onOpenAudit()"></button>

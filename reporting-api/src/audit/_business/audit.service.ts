@@ -20,16 +20,31 @@ export class AuditService {
     private readonly entityManager: EntityManager,
     private pcAuditService: PcAuditService
   ){}
-  async create(normeId:string, auditeurId: string,createAuditDto: CreateAuditDto): Promise<Audit> {
+ /* async create(normeId:string, auditeurId: string,createAuditDto: CreateAuditDto): Promise<Audit> {
     const norme_projet = await this.normeRepository.findOne({where: {id:normeId}})
-    const auditeur = await this.auditeurRepository.findOne({where: {id:auditeurId}})
+    const auditeur = await this.auditeurRepository.findOneBy({keycloakId:auditeurId})
+    console.log('audit auditor service: ',auditeur)
     if(!norme_projet){
       throw new NotFoundException('Norme invalide');
     }
     const audit = this.auditRepository.create({ ...createAuditDto,auditeur,norme_projet});
     this.entityManager.save(audit);
     return audit;
-  }
+  }*/
+
+    async create(normeId: string, auditeurId: string, createAuditDto: CreateAuditDto): Promise<Audit> {
+      const norme_projet = await this.normeRepository.findOne({ where: { id: normeId } });
+      const auditeur = await this.auditeurRepository.findOneBy({ keycloakId: auditeurId });
+      
+      if (!norme_projet) {
+        throw new NotFoundException('Norme invalide');
+      }
+    
+      const audit = this.auditRepository.create({ ...createAuditDto, auditeur, norme_projet });
+      await this.entityManager.save(audit);
+      
+      return audit;
+    }
 
   async findNormeChapitresWithPointsByNorme(normeAdopId: string): Promise<{nms:NormeAdopte[],latestEvaluations:PcAudit[]}> {
     const nms = await this.normeRepository.find({
@@ -54,15 +69,35 @@ export class AuditService {
     }
   }
   
+   //audit verfication
+   
+  async updateAuditState(id: string, control: boolean): Promise<Audit | undefined> {
+    try {
+      const audit = await this.auditRepository.findOne({where:{id:id}});
+
+      if (!audit) {
+        throw new Error(`Audit with id ${id} not found.`);
+      }
+
+      audit.control = control;
+      const updatedAudit = await this.auditRepository.save(audit);
+
+      return updatedAudit;
+    } catch (error) {
+      throw new Error(`Failed to update Audit control state: ${error.message}`);
+    }
+  }
   
 
   findAll() {
     return this.auditRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} audit`;
+  async findAuditById(auditId: string): Promise<any> {
+    // Implement logic to find and return the audit entity, which includes the associated project
+    return await this.auditRepository.findOne({ where: { id: auditId }, relations: ['norme_projet', 'norme_projet.projet'] });
   }
+
 
   update(id: number, updateAuditDto: UpdateAuditDto) {
     return `This action updates a #${id} audit`;
@@ -71,4 +106,45 @@ export class AuditService {
   remove(id: number) {
     return `This action removes a #${id} audit`;
   }
+
+  //total audits
+  async countTotalAudits(managerId:string):Promise<number>{
+    return await this.auditRepository
+    .createQueryBuilder('audit')
+        .leftJoin('audit.norme_projet', 'normeAdopte')
+        .leftJoin('normeAdopte.projet', 'projet')
+        .leftJoin('projet.project_manager', 'user')
+        .where('user.keycloakId = :managerId', { managerId })
+        .getCount();
+  }
+
+
+  //Count audits
+  async countAuditsWithControlFalseByManager(managerKeycloakId: string): Promise<number> {
+    return await this.auditRepository
+        .createQueryBuilder('audit')
+        .leftJoin('audit.norme_projet', 'normeAdopte')
+        .leftJoin('normeAdopte.projet', 'projet')
+        .leftJoin('projet.project_manager', 'user')
+        .where('user.keycloakId = :managerKeycloakId', { managerKeycloakId })
+        .andWhere('audit.control = :control', { control: false })
+        .andWhere('normeAdopte.validation = :validation', { validation: false })
+        .getCount();
+}
+
+//find audits
+async getAuditsWithControlFalse(managerId: string) {
+  return await this.auditRepository
+    .createQueryBuilder('audit')
+    .leftJoinAndSelect('audit.norme_projet', 'normeAdopte') // Include related normeAdopte entity
+    .leftJoinAndSelect('normeAdopte.projet', 'projet') // Include related projet entity
+    .leftJoinAndSelect('projet.client','client')
+    .leftJoinAndSelect('normeAdopte.norme', 'norme')
+    .leftJoinAndSelect('projet.project_manager', 'projectManager') // Include related projectManager
+    .leftJoinAndSelect('audit.auditeur', 'auditeur') // Include related auditeur entity
+    .where('projectManager.keycloakId = :managerId', { managerId })
+    .andWhere('audit.control = :control', { control: false })
+    .andWhere('normeAdopte.validation = :validation', { validation: false })
+    .getMany();
+}
 }

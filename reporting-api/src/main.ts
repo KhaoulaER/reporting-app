@@ -4,6 +4,7 @@ import * as cors from 'cors';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { getConnection } from 'typeorm';
+import { RolesGuard } from './gurads/roles.guard';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   // Configurer le serveur pour servir des fichiers statiques
@@ -19,6 +20,9 @@ async function bootstrap() {
   });
 
   app.setGlobalPrefix('api', { exclude: [] });
+  //GUARDS
+  app.useGlobalGuards() //////////////AUTHGUARD
+  
   // Configurer CORS
   app.enableCors({
     origin: 'http://localhost:4200', // Autoriser uniquement ce domaine

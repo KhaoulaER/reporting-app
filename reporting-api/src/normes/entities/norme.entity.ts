@@ -7,6 +7,8 @@ export class Norme {
     id:string;
     @Column()
     designation: string;
+    @Column({default:''})
+    echel: string;
     @OneToMany(() => Chapitre, chapitre => chapitre.norme)
     chapitre: Chapitre[];
 

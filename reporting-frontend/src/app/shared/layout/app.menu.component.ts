@@ -2,6 +2,7 @@ import { OnInit } from '@angular/core';
 import { Component } from '@angular/core';
 import { LayoutService } from './service/app.layout.service';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { AuthenticationService } from '../../core/authentication/authentication.service';
 
 @Component({
     selector: 'app-menu',
@@ -10,22 +11,26 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 export class AppMenuComponent implements OnInit {
 
     model: any[] = [];
-    managerId:string = '57d1c5dc-887b-3029-19e2-e8ad80a48ce6'
-
+    private managerId:any;
+    auditorId:any ;
     constructor(
         public layoutService: LayoutService,
         private route: ActivatedRoute,
-        private router:Router
+        private router:Router,
+        private authService:AuthenticationService
     ) { }
 
     ngOnInit() {
+        this.managerId=this.authService.authenticatedUser?.id
+        
+        //console.log('manager id: ', this.managerId)
          // Vérifiez l'URL actuelle
          const urlPath = this.router.url;
 
          // Ajustez le menu en fonction de l'URL
          if (urlPath.includes('home-manager')) {
              this.updateMenu('PROJECT MANAGER');
-         } else if (urlPath.includes('home-admin')) {
+         } else if (urlPath.includes('admin')) {
              this.updateMenu('ADMIN');
          }
          else if (urlPath.includes('home-auditor')) {
@@ -41,21 +46,21 @@ export class AppMenuComponent implements OnInit {
                 {
                     label: 'Home',
                     items: [
-                        { label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/home-admin'] }
+                        { label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/admin'] }
                     ]
                 },
                 {
                     label: 'Utilisateurs',
                     items: [
-                        { label: 'Admins', icon: 'pi pi-fw pi-users', routerLink: ['/home-admin/users', 'ADMIN'] },
-                        { label: 'Auditeurs', icon: 'pi pi-fw pi-users', routerLink: ['/home-admin/users', 'AUDITOR'] },
-                        { label: 'Chefs des projets', icon: 'pi pi-fw pi-users', routerLink: ['/home-admin/users', 'PROJECT_MANAGER'] }
+                        { label: 'Admins', icon: 'pi pi-fw pi-users', routerLink: ['/admin/users', 'ADMIN'] },
+                        { label: 'Auditeurs', icon: 'pi pi-fw pi-users', routerLink: ['/admin/users', 'AUDITOR'] },
+                        { label: 'Chefs des projets', icon: 'pi pi-fw pi-users', routerLink: ['/admin/users', 'PROJECT_MANAGER'] }
                     ]
                 },
                 {
                     label: 'Normes',
                     items: [
-                        { label: 'Normes', icon: 'pi pi-fw pi-clipboard', routerLink: ['/home-admin/norms'] },
+                        { label: 'Normes', icon: 'pi pi-fw pi-clipboard', routerLink: ['/admin/norms'] },
                     ]
                 }
             ];

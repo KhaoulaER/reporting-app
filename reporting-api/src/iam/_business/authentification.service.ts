@@ -22,6 +22,7 @@ import * as querystring from 'querystring';
 import { catchError, lastValueFrom, map, of } from 'rxjs';
 import { Result } from 'src/shared/result/result.model'; 
 import { ConnexionKeycloakService } from 'src/connexion-keycloak.service'; 
+import { promisify } from 'util';
 
 const assert=require('assert');
 
@@ -34,6 +35,10 @@ export class AuthenticationService {
   keycloak_client_secret: string;
   keycloakLogoutUri: string;
   requiredActions = ['TERMS_AND_CONDITIONS', 'UPDATE_PASSWORD'];
+  
+  private getAsync: any;
+  private setAsync: any;
+
 
   constructor(
     private readonly configservice: ConfigService,
@@ -44,6 +49,9 @@ export class AuthenticationService {
       host: this.configservice.get('REDIS_HOST'),
       port: this.configservice.get('REDIS_PORT'),
     });
+
+    this.getAsync = promisify(this.redisClient.get).bind(this.redisClient);
+    this.setAsync = promisify(this.redisClient.set).bind(this.redisClient);
 
     
     this.applicationId = this.configservice.get('KEYCLOAK_CLIENT_ID');
@@ -350,25 +358,27 @@ export class AuthenticationService {
     }
   }
 
-  async login(req: Login) {
+   async login(req: Login) {
     try {
       const response = await this.assertAuthorizationCodeFlowWithPkce(req);
-
+      
       console.log('Response :', response);
-
+  
       if (
         response.hasOwnProperty('execution') &&
         response.hasOwnProperty('formAction')
       ) {
         return Result.OK(response);
       }
-
+  
       let user = await this.getUserByToken(response['access_token']);
-
-      console.log('User :', user);
+      const decodedToken = jwtDecode(response['access_token']);
+      const groups = decodedToken['roles'] || [];
+  
       if (user.isFailure) {
         return user;
       }
+  
       user = await user.getValue();
       this.redisClient.set(
         `sessionToken:${user['sub']}`,
@@ -388,10 +398,22 @@ export class AuthenticationService {
           }
         },
       );
+  
       let authenticatedUser: any = {
         userId: user['sub'],
         email: user['email'],
+        groups: decodedToken['groups'],
+        roles: [
+          ...(decodedToken['resource_access'][process.env.KEYCLOAK_CLIENT_ID]?.roles || []),
+          ...(decodedToken['realm_access'][process.env.KEYCLOAK_REALM]?.roles || [])
+        ]
       };
+  
+      // Logging for debugging purposes
+      console.log('Decoded Token:', decodedToken);
+      console.log('Realm Access Roles:', decodedToken['realm_access']);
+      console.log('Resource Access Roles:', decodedToken['resource_access']);
+  
       const decoded = jwtDecode(response['access_token']);
       if (decoded['acr'] && decoded['acr'] === 'username_password') {
         authenticatedUser = {
@@ -400,14 +422,16 @@ export class AuthenticationService {
           refresh_token: response['refresh_token'],
         };
       }
+  
       return Result.OK({
         message: 'Step 1: User verified',
         authLevel: decoded['acr'],
         ...authenticatedUser,
+        access_token: response['access_token']
       });
     } catch (error) {
-      console.log("erorrrrr", error);
-
+      console.log("error:", error);
+  
       if (error.code === 'ERR_INVALID_URL') {
         return Result.Fail(AuthenticationErrors.notFoundError('Invalid_url'));
       }
@@ -419,6 +443,7 @@ export class AuthenticationService {
       return Result.Fail(AuthenticationErrors.unauthorizedError(error.message));
     }
   }
+   
 
   async exchangeCodeForTokens(code, verifier, removeVerifier = false) {
     const body = {
@@ -474,6 +499,53 @@ export class AuthenticationService {
       return Result.Fail(error);
     }
   }
+
+  // ------ Get User Role By Token ----------
+// ------ Get User Role By Token ----------
+async getUserRoleByToken(token: string): Promise<Result<string>> {
+  try {
+    // Configuration de la requête à votre serveur Keycloak
+    const options = {
+      headers: {
+        Authorization: 'Bearer ' + token,
+      },
+      method: 'GET',
+    };
+
+    // Envoi d'une requête à l'endpoint userinfo de Keycloak
+    const response = await fetch(
+      `${this.configservice.get(
+        'KEYCLOAK_URL',
+      )}/protocol/openid-connect/userinfo`,
+      options,
+    );
+
+    if (response.status !== 200) {
+      return Result.Fail('user_login_expired');
+    }
+
+    const userInfo = await response.json();
+
+    // Supposant que les rôles sont contenus dans les claims de l'utilisateur
+    const roles = userInfo.realm_access?.roles || [];
+    
+    // Récupérer le rôle principal de l'utilisateur (ajuster selon votre logique)
+    let userRole: string;
+    if (roles.includes('ADMIN')) {
+      userRole = 'ADMIN';
+    } else if (roles.includes('PROJECT_MANAGER')) {
+      userRole = 'PROJECT_MANAGER';
+    } else if (roles.includes('AUDITOR')) {
+      userRole = 'AUDITOR';
+    } else {
+      userRole = 'USER'; // Rôle par défaut ou autre
+    }
+
+    return Result.OK(userRole);
+  } catch (error) {
+    return Result.Fail(error);
+  }
+}
 
   // ------ Validate Token----------
   async validateToken(validationObject: IValidateToken) {
@@ -568,6 +640,41 @@ export class AuthenticationService {
 
   async logout(data: LogOutRequest): Promise<Result<any> | Result<Error>> {
     const params = {
+      client_id: data.applicationid || this.configservice.get('KEYCLOAK_CLIENT_ID'),
+      client_secret: data.clientSecret || this.configservice.get('KEYCLOAK_CLIENT_SECRET'),
+      refresh_token: data.refresh_token,
+    };
+  
+    console.log('Logout Params:', params);  // Log the params for debugging
+  
+    const result = this._http
+      .post(
+        this.keycloakLogoutUri,
+        querystring.stringify(params),
+        this.getContentType(),
+      )
+      .pipe(
+        map((res) => {
+          return Result.OK(res.data);
+        }),
+        catchError((e) => {
+          // Log detailed error information
+          console.error('Error during logout:', e.response?.data || e.message);
+          return of(
+            Result.Fail(
+              UnknownKeycloakError.create(
+                e.response?.data?.error_description || 'error_logout',
+              ),
+            ),
+          );
+        }),
+      );
+    return lastValueFrom(result);
+  }
+  
+
+  /*async logout(data: LogOutRequest): Promise<Result<any> | Result<Error>> {
+    const params = {
       client_id:
         data.applicationid || this.configservice.get('KEYCLOAK_CLIENT_ID'),
       client_secret:
@@ -596,7 +703,7 @@ export class AuthenticationService {
       );
     return lastValueFrom(result);
   }
-
+*/
   // ----- For Password Policy
   public async getDomainPolicies(
     domain: string,
@@ -620,7 +727,9 @@ export class AuthenticationService {
     const realm = this.configservice.get('KEYCLOAK_REALM');
     const decodeToken = jwtDecode(input.token) as { sub: string };
     const userId = decodeToken.sub;
-
+    console.log('Decoded User ID:', userId);
+  console.log('Realm:', realm);
+  console.log('Authorization Token:', input.token);
     const result = this._http
       .put(
         `${this.keycloak_base_url}/admin/realms/${realm}/users/${userId}/reset-password`,
@@ -637,6 +746,7 @@ export class AuthenticationService {
           return Result.OK(res.data);
         }),
         catchError((e) => {
+          //console.error('Error from Keycloak:', e.response); // Detailed error response
           return of(
             Result.Fail(
               UnknownKeycloakError.create(

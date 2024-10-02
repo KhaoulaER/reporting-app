@@ -29,6 +29,21 @@ export class LogInUseCase {
       }
     }
 
-    return logInResult;
+    // Format response for frontend
+    const response = logInResult.getValue();
+    const userId = response.userId;
+    const email = response.email;
+    const groups = response.groups || [];
+    const roles = response.roles || [];
+
+    return {
+      userId,
+      email,
+      groups,
+      roles,
+      access_token: response.access_token,
+      refresh_token: response.refresh_token,
+      authLevel: response.authLevel,
+    };
   }
 }

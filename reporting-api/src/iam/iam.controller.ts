@@ -7,7 +7,9 @@ import {
   Put,
   Query,
   Req,
+  Res,
 } from '@nestjs/common';
+//import { Response } from 'express';
 import { LogInUseCase } from './_use-case/login/login.use-case';
 import { GetPasswordPolicyUseCase } from './_use-case/get-password-policy/get-password-policy_case';
 import { LogInRequestDto } from './_use-case/login/request.dto';
@@ -23,7 +25,11 @@ import { ValidateTokenRequestDto } from './_use-case/validate-token/request.dto'
 import { ValidateTokenoUseCase } from './_use-case/validate-token/validate-token_use-case';
 import { VerifyUserRequestDto } from './_use-case/verify-user/request.dto';
 import { VerifyUserUseCase } from './_use-case/verify-user/verify-code.use-case';
-import { AuthenticatedUser, Public } from 'nest-keycloak-connect';
+import {  Public } from 'nest-keycloak-connect';
+import { Response } from 'express';
+import { LogOutRequestDto } from './_use-case/logout/request.dto';
+import { LogOutUseCase } from './_use-case/logout/logout-use_case';
+import { AuthenticatedUser } from './authenticated-user.decorator';
 
 @Controller('auth')
 export class IamController {
@@ -36,20 +42,41 @@ export class IamController {
     private refreshTokenUseCase: RefreshTokenUseCase,
     private verifyUserUseCase: VerifyUserUseCase,
     private sendResetCodeUseCase: SendResetCodeUseCase,
+    private logOutUseCase:LogOutUseCase
   ) {}
 
   @Post('login')
   @Public()
-  login(@Body() input: LogInRequestDto) {
+  async login(@Body() input: LogInRequestDto, @Res({ passthrough: true }) res: Response) {
     return this.logInUseCase.run(input);
-  }
+    /*const result = await this.logInUseCase.run(input);
 
-  // @Post('logout')
-  // @HttpCode(204)
-  // // @Public()
-  // logout(@Body() token: LogOutRequestDto, @AuthenticatedUser() user: any) {
-  //   return this.logOutUseCase.run({ body: token, id: user['sub'] });
-  // }
+    // Set HttpOnly cookies
+    res.cookie('access_token', result.access_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // Set to true in production
+      //sameSite: 'Strict', // Adjust based on your security needs
+    });
+    res.cookie('refresh_token', result.refresh_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production', // Set to true in production
+      //sameSite: 'Strict', // Adjust based on your security needs
+    });
+
+    return result;*/
+  }
+ 
+
+   @Post('logout')
+   @HttpCode(204)
+   @Public()
+   logout(@Body() token: LogOutRequestDto, /*@AuthenticatedUser() user: any*/ @Req() req:any) {
+    console.log('Authenticated user:', req.user.keycloakId);  // Add this line for debugging
+    if (!req.user.keycloakId) {
+      throw new Error('User is not authenticated');
+    }
+    return this.logOutUseCase.run({ body: token, id: req.user['sub'] });
+  }
 
   @Post('TokenValidation')
   @Public()

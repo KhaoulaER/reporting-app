@@ -9,3 +9,18 @@ export class CreateUserDto {
     readonly phone:string
     readonly role:Role
 }
+export interface KeycloakUserDto {
+    password: string
+    email: string;
+    firstName: string;
+    lastName: string;
+    credentials: {
+      type: string;
+      value: string;
+      temporary: boolean;
+    }[];
+    enabled: boolean;
+    attributes?: Record<string, string[]>;
+    groups?: string[];
+    username: string;
+  }

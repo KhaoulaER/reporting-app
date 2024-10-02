@@ -43,8 +43,8 @@ export class NormeAdopteService {
     return this.normeAdopteRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} normeAdopte`;
+  async findOne(id: string):Promise<NormeAdopte>{
+    return await this.normeAdopteRepository.findOne({where:{id:id}, relations: ['norme']});
   }
 
   update(id: number, updateNormeAdopteDto: UpdateNormeAdopteDto) {

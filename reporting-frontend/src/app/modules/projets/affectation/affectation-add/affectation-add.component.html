@@ -1,0 +1,16 @@
+<form [formGroup]="addAffectation">
+    <div class="field" style="display: inline-flex;">
+        <label for="auditeur" class="font-semibold w-6rem">Auditeur:</label>
+        <!--p-dropdown [options]="auditors" formControlName="selectedAuditor" optionLabel="firstName" placeholder="selectionner auditeur.."></p-dropdown-->
+        <select id="auditeurId" formControlName="auditeur" style="width: 222px;" class="form-control" placeholder="Auditeur...">
+            <option value="">Sélectionnez un auditeur...</option>
+            <option *ngFor="let auditeur of auditeurs" [value]="auditeur.id">{{ auditeur.firstName }} {{ auditeur.lastName }}</option>
+          </select>
+        <select name="" id="droit" formControlName="droit" class="form-control ml-2" placeholder="Droit..">
+            <option value="">Sélectionner le droit..</option>
+            <option *ngFor="let droit of droits" [value]="droit">{{droit}}</option>
+        </select>
+    <button type="submit" pButton pRipple icon="pi pi-check" class="p-button-info ml-2 del-button" (click)="onSubmit()"></button>
+    <button type="button" pButton pRipple icon="pi pi-times" class="p-button-secondary del-button ml-2" (click)="closeAdd()"></button>
+</div>
+</form>

@@ -1,8 +1,14 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { ConnexionKeycloakService } from './connexion-keycloak.service';
+import { UsersModule } from './users/users.module';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
-  providers: [ConnexionKeycloakService],
+  imports: [forwardRef(() => UsersModule)],
+  providers: [ConnexionKeycloakService,
+    JwtService, 
+    
+  ],
   exports: [ConnexionKeycloakService],
 })
 export class KeycloakServiceModule {}
