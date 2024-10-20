@@ -5,7 +5,8 @@ import { AppTopBarComponent } from './layout/app.topbar.component';
 import { DialogModule } from 'primeng/dialog';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CredentialChangeModule } from './layout/credential-change/credential-change.module';
-
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ToastModule } from 'primeng/toast';
 @NgModule({
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   declarations: [
@@ -15,7 +16,9 @@ import { CredentialChangeModule } from './layout/credential-change/credential-ch
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    CredentialChangeModule
+    CredentialChangeModule,
+    ConfirmDialogModule,
+    ToastModule
   ]
 })
 export class SharedModule { }

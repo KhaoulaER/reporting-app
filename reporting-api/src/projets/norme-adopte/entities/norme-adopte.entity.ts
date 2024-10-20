@@ -1,6 +1,8 @@
+import { audit } from "rxjs";
+import { Audit } from "src/audit/entities/audit.entity";
 import { Norme } from "src/normes/entities/norme.entity";
 import { Projet } from "src/projets/entities/projet.entity";
-import { Column, Double, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Double, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class NormeAdopte {
@@ -15,5 +17,7 @@ export class NormeAdopte {
     evaluation: number;
     @Column({default: false})
     validation: boolean
+    @OneToMany(()=>Audit, (audits)=>audits.norme_projet)
+    audits:Audit[];
     
 }

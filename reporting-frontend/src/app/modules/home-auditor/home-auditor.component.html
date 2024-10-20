@@ -9,8 +9,12 @@
                 <i class="pi pi-clone text-500 text-xl"></i>
             </div>
         </div>
-       <span class="text-500 font-medium">{{totalNVPro}}</span>
-        <span class="text-500">projets non validés</span>
+        <a (click)="handleUnauditedProjects()" style="cursor: pointer;"><span class="text-green-500 font-medium">{{totalUnaudited}}  </span></a>
+        <span class="text-500">Projets non consultés</span>
     </div>
-
+    
 </div>
+<app-unaudited-pro
+    [displayUnaudited]="displayUnaudited"
+>
+</app-unaudited-pro>

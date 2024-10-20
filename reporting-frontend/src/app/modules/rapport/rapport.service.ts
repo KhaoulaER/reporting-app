@@ -2,10 +2,15 @@ import { Injectable } from '@angular/core';
 import * as ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import * as XLSX from 'xlsx';
+import ChartJSNodeCanvas from 'chartjs-to-image';  // Proper import for chartjs-to-image
+import { Buffer } from 'buffer';
+
+
 //import XlsxPopulate from 'xlsx-populate';
 
 import { NormeAdopte } from '../projets/model/projet';
 import { Chart, ChartConfiguration, ChartOptions } from 'chart.js';
+import ChartJsImage from 'chartjs-to-image';
 
 
 @Injectable({
@@ -13,9 +18,12 @@ import { Chart, ChartConfiguration, ChartOptions } from 'chart.js';
 })
 export class RapportService {
 
+  public chartBase64:string='';
   constructor() { }
 
   generateExcel(dataAudit: any[], dataConformite: any[], niveauMaturite: string[], fileName: string, normeAdopte: NormeAdopte): void {
+    (window as any).Buffer = Buffer;
+
     const workbook = new ExcelJS.Workbook();
 
     function getBase64ImageFromURL(url: string): Promise<string> {
@@ -168,7 +176,7 @@ else{
               conformite = 'Conforme';
               break;
             default:
-              conformite = '';  // Leave blank if niveau_maturite is undefined or doesn't match
+              conformite = 'N/A';  // Leave blank if niveau_maturite is undefined or doesn't match
           }
         }
       
@@ -176,7 +184,7 @@ else{
         const row = worksheetAudit.addRow({
           chapitre: item.chapitre,
           regles: item.regles,
-          niveau_maturite: item.niveau_maturite,
+          niveau_maturite: item.niveau_maturite || 'N/A',
           conformite: conformite,  // New Conformité value
           constat: item.constat,
           preuve: item.preuve || '',
@@ -224,9 +232,7 @@ else{
                 pattern: 'solid',
                 fgColor: { argb: 'FFFFFFFF' } // Default white background
               };
-          }
-
-          
+          }    
       }
     if(colNumber === 1){
         cell.fill = {
@@ -236,8 +242,6 @@ else{
         };
       }
     
-          
-      
           // Apply conditional formatting for Conformité (fifth column in this case)
           if (colNumber === 4) {  // Adjust to match the new Conformité column index
             switch (cell.value) {
@@ -366,8 +370,8 @@ headerRowConformite.values = [
          const row = worksheetConformite.addRow({
            chapitre: item.chapitre,
            nombre_pc_audit: item.nombre_pc_audit,
-           conformite: item.conformite * 100 + '%',
-           niveau_cible: '80 %'
+           conformite: (item.conformite * 100).toFixed(2) + '%',
+           niveau_cible: 80 +'%'
          });
  
          item.result.forEach((result: any) => {
@@ -508,7 +512,6 @@ averageConformiteRow.eachCell((cell, colNumber) => {
       };
       });
 
-      
       // **Add row for total control points with valid 'niveau_maturite'**
       const totalNonValidNiveauRow = worksheetConformite.addRow({
         chapitre: 'Total des mesures non applicables',
@@ -533,9 +536,6 @@ averageConformiteRow.eachCell((cell, colNumber) => {
         };
       });
     
-
-      
-    
        // Enlever les bordures des 4 premières lignes entre les colonnes A et G
        for (let rowNum = 1; rowNum <= 4; rowNum++) {
          const row = worksheetConformite.getRow(rowNum);
@@ -549,10 +549,64 @@ averageConformiteRow.eachCell((cell, colNumber) => {
            };
          }
        }
-
-
 // Create radar chart
-const chartConfiguration: ChartConfiguration<'radar', number[], ChartOptions<'radar'>> = {
+
+// Radar chart configuration
+const chartConfiguration: any = {
+  type: 'radar',
+  data: {
+    labels: dataConformite.map((item: any) => item.chapitre),
+    datasets: [{
+      label: 'Conformité',
+      data: dataConformite.map((item: any) => item.conformite * 100),
+      backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: 'rgba(54, 162, 235, 1)'
+    },
+    {
+      label: 'Conformité cible',
+      data: dataConformite.map((item: any) => 80),
+      backgroundColor: 'rgba(0, 128, 0, 0.2)',
+            borderColor: 'rgba(0, 128, 0, 1)',
+            pointBackgroundColor: 'rgba(0, 128, 0, 1)',
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: 'rgba(0, 128, 0, 1)'
+    },
+  ]
+  },
+  options: {
+    responsive: true
+  }
+};
+
+// Create a new ChartJsImage instance and configure it
+const chartImage = new ChartJsImage();
+chartImage.setConfig(chartConfiguration);
+chartImage.setWidth(900);
+chartImage.setHeight(500);
+
+// Generate the chart image as a base64 string
+const radarChartImage = await chartImage.toDataUrl();  // This method fetches the chart image as a DataURL
+
+// Add the radar chart image to the Excel worksheet
+const imageChart = workbook.addImage({
+  base64: radarChartImage,  // using the base64 data URL from chartjs-to-image
+  extension: 'png'
+});
+
+// Insert the image into the Excel worksheet at the desired position
+worksheetConformite.addImage(imageChart, {
+  tl: { col: 0, row: 29 },
+  ext: { width: 1000, height: 550 }
+});
+
+console.log('image chart: ', imageChart);
+
+/*const chartConfiguration: ChartConfiguration<'radar', number[], ChartOptions<'radar'>> = {
   type: 'radar',
   data: {
     labels: dataConformite.map(item => item.chapitre),
@@ -580,13 +634,16 @@ const radarChartImage = await new Promise<string>((resolve, reject) => {
   }
 
   const chartInstance = new Chart(ctx, chartConfiguration);
+  console.log('chart instance: ', chartInstance)
   chartInstance.update();
 
   // Use setTimeout to allow the chart to render completely
   setTimeout(() => {
-    const dataURL = canvas.toDataURL('image/png');
+    const dataURL = canvas.toDataURL();
+    console.log('chart base url; ', dataURL)
     resolve(dataURL);
   }, 0);
+
 });
 
 // Add the radar chart image to the sheet
@@ -595,52 +652,11 @@ const imageChart = workbook.addImage({
   extension: 'png',
 });
 worksheetConformite.addImage(imageChart, {
-  tl: { col: 0, row: 10 },
+  tl: { col: 0, row: 29 },
   ext: { width: 600, height: 400 }
 });
-
-
- /* const base64RadarChart = await generateRadarChartAsBase64(dataConformite);
-  const radarChartImageId = workbook.addImage({
-    base64: base64RadarChart,
-    extension: 'png'
-  });
-
-  worksheetConformite.addImage(radarChartImageId, {
-    tl: { col: 0, row: 10 },
-    ext: { width: 400, height: 300 }
-  });*/
-       // Add radar chart image
-  /*const radarChartBase64 = generateRadarChartAsBase64(dataConformite).then((radarChartBase64: string) => {
-    const radarChartImageId = workbook.addImage({
-      base64: radarChartBase64,
-      extension: 'png'
-    });
-  
-    worksheetConformite.addImage(radarChartImageId, {
-      tl: { col: 0, row: 10 },
-      ext: { width: 400, height: 300 }
-    });
-  }).catch(error => {
-    console.error('Error generating radar chart:', error);
-  });
-  const radarChartImageId = workbook.addImage({
-    base64: radarChartBase64,
-    extension: 'png'
-  });
-
-  worksheetConformite.addImage(radarChartImageId, {
-    tl: { col: 0, row: 10 },
-    ext: { width: 400, height: 300 }
-  });*/
-
-  // Save Excel file
-  /*const buffer = await workbook.xlsx.writeBuffer();
-  const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-  saveAs(blob, fileName);*/
-
-  
-// Feuille d'aide *****************************************************************
+console.log('image chart: ', imageChart)
+*/
 // Feuille d'aide
 // Create the worksheet
 const worksheetAide = workbook.addWorksheet('Aide');
@@ -870,6 +886,8 @@ generateRadarChartAsBase64(data: any): Promise<string> {
 
     chart.update();
     const dataURL = canvas.toDataURL();
+    this.chartBase64=dataURL
+    console.log('chart base: ', this.chartBase64)
     resolve(dataURL);
   });
 }   

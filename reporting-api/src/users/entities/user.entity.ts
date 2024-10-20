@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Audit } from "src/audit/entities/audit.entity";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 
 export enum Role{
@@ -22,6 +23,8 @@ export class User {
     password: string
     @Column()
     phone: string;
+    @OneToMany(()=>Audit, (audits)=>audits.norme_projet)
+    audits:Audit[];
 
 
       constructor(user: Partial<User>){

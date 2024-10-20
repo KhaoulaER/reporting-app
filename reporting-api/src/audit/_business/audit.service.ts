@@ -4,12 +4,13 @@ import { UpdateAuditDto } from '../dto/update-audit.dto';
 import { User } from 'src/users/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { NormeAdopte } from 'src/projets/norme-adopte/entities/norme-adopte.entity';
-import { EntityManager, Repository } from 'typeorm';
+import { Brackets, EntityManager, Repository } from 'typeorm';
 import { Audit } from '../entities/audit.entity';
 import { Norme } from 'src/normes/entities/norme.entity';
 import { PcAuditService } from '../pc-audit/_business/pc-audit.service';
 import { PcAudit } from '../pc-audit/entities/pc-audit.entity';
 import { AuditResult } from '../_result/audit-result.interface';
+import { Projet } from 'src/projets/entities/projet.entity';
 
 @Injectable()
 export class AuditService {
@@ -17,6 +18,7 @@ export class AuditService {
     @InjectRepository(NormeAdopte) private normeRepository: Repository<NormeAdopte>,
     @InjectRepository(User) private auditeurRepository: Repository<User>,
     @InjectRepository(Audit) private auditRepository: Repository<Audit>,
+    @InjectRepository(Projet) private projetRepository: Repository<Projet>,
     private readonly entityManager: EntityManager,
     private pcAuditService: PcAuditService
   ){}
@@ -47,17 +49,18 @@ export class AuditService {
     }
 
   async findNormeChapitresWithPointsByNorme(normeAdopId: string): Promise<{nms:NormeAdopte[],latestEvaluations:PcAudit[]}> {
-    const nms = await this.normeRepository.find({
-      where: { id: normeAdopId },
-      relations: [
-        'norme',
-        'projet',
-        'projet.client',
-        'norme.chapitre',
-        'norme.chapitre.pointsControle',
-        'norme.chapitre.pointsControle.preuve',
-      ],
-    });
+    const nms = await this.normeRepository
+    .createQueryBuilder('norme_adopte')
+    .leftJoinAndSelect('norme_adopte.norme', 'norme')
+    .leftJoinAndSelect('norme_adopte.projet', 'projet')
+    .leftJoinAndSelect('projet.client', 'client')
+    .leftJoinAndSelect('projet.project_manager','project_manager')
+    .leftJoinAndSelect('norme.chapitre', 'chapitre')
+    .leftJoinAndSelect('chapitre.pointsControle', 'pointsControle')
+    .leftJoinAndSelect('pointsControle.preuve', 'preuve')
+    .where('norme_adopte.id = :id', { id: normeAdopId })
+    .orderBy('chapitre.created_at', 'ASC') // Order chapters by create_at
+    .getMany();
     if (!nms) {
       throw new NotFoundException('Norme adoptée non trouvée');
     }
@@ -126,9 +129,11 @@ export class AuditService {
         .leftJoin('audit.norme_projet', 'normeAdopte')
         .leftJoin('normeAdopte.projet', 'projet')
         .leftJoin('projet.project_manager', 'user')
+        .leftJoinAndSelect('audit.pc_audit', 'pcAudit') // Join PcAudit entity
         .where('user.keycloakId = :managerKeycloakId', { managerKeycloakId })
         .andWhere('audit.control = :control', { control: false })
         .andWhere('normeAdopte.validation = :validation', { validation: false })
+        .andWhere('pcAudit.constat IS NOT NULL') // Add condition for constat being not null
         .getCount();
 }
 
@@ -142,9 +147,28 @@ async getAuditsWithControlFalse(managerId: string) {
     .leftJoinAndSelect('normeAdopte.norme', 'norme')
     .leftJoinAndSelect('projet.project_manager', 'projectManager') // Include related projectManager
     .leftJoinAndSelect('audit.auditeur', 'auditeur') // Include related auditeur entity
+    .leftJoinAndSelect('audit.pc_audit', 'pcAudit') // Join PcAudit entity
     .where('projectManager.keycloakId = :managerId', { managerId })
     .andWhere('audit.control = :control', { control: false })
-    .andWhere('normeAdopte.validation = :validation', { validation: false })
+    .andWhere(
+      new Brackets(qb => {
+        qb.where('pcAudit.constat IS NOT NULL')
+          .orWhere('pcAudit.preuve IS NOT NULL');
+      })
+    ) // Add condition where constat OR preuve is not null
     .getMany();
+}
+
+
+//For auditor count number of affected non audited projects
+async countUnauditedProjectsForAuditor(auditorId: string): Promise<number> {
+  const query = this.normeRepository.createQueryBuilder('norme')
+    .innerJoin('norme.affectations', 'affectation', 'affectation.auditeurId = :auditorId', { auditorId })
+    .leftJoin('projet.normeAdopte', 'normeAdopte')
+    .leftJoin('normeAdopte.audits', 'audit', 'audit.auditeurId = :auditorId', { auditorId })
+    .where('audit.id IS NULL')
+    .getCount();
+  
+  return query;
 }
 }

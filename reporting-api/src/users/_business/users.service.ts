@@ -51,6 +51,7 @@ private async createUserInKeycloak(userData: Partial<User> & { attributes?: Reco
     firstName: userData.firstName,
     lastName: userData.lastName,
     enabled: true,
+    emailVerified: true, // Mark the email as verified
     credentials: [
       {
         type: 'password',

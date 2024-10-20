@@ -85,6 +85,8 @@ import { NormeUpdateComponent } from './modules/normes/norme-list/norme-action/n
 import { NormeListComponent } from './modules/normes/norme-list/norme-list.component';
 import { LoginComponent } from './core/authentication/login/login.component';
 import { AuditVerifyComponent } from './modules/home-manager/audit-list/audit-verify/audit-verify.component';
+import { UnauditedProComponent } from './modules/home-auditor/unaudited-pro/unaudited-pro.component';
+import { RapportWordComponent } from './modules/rapport/rapport-word/rapport-word.component';
 //import { AuthInterceptor } from './core/auth.interceptor';
 //import { AuthInterceptor } from './core/auth.interceptor';
 
@@ -144,6 +146,8 @@ import { AuditVerifyComponent } from './modules/home-manager/audit-list/audit-ve
     AuditListComponent,
     HomeAuditorComponent,
     AuditVerifyComponent,
+    UnauditedProComponent,
+    RapportWordComponent,
    // CredentialChangeComponent
      ],
   imports: [

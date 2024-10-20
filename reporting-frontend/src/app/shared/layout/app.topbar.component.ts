@@ -1,5 +1,5 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { MenuItem, MessageService } from 'primeng/api';
+import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { LayoutService } from "./service/app.layout.service";
 import { AuthenticationService } from '../../core/authentication/authentication.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -20,17 +20,18 @@ export class AppTopBarComponent {
     @ViewChild('topbarmenubutton') topbarMenuButton!: ElementRef;
 
     @ViewChild('topbarmenu') menu!: ElementRef;
-    public firstName: string | undefined;
+    public fullName: string | undefined;
     public lastName: string | undefined;
     public email: string | undefined;
 
     constructor(public layoutService: LayoutService,public authService:AuthenticationService,
         public messageService:MessageService,
+        public confirmationService: ConfirmationService,
         public route:ActivatedRoute,
         public router:Router,
         public tokenStorage:TokenStorageService
     ) {
-        this.firstName = authService.authenticatedUser?.firstName;
+        this.fullName = authService.authenticatedUser?.fullName;
         this.lastName = authService.authenticatedUser?.lastName;
         this.email = authService.authenticatedUser?.email;
         //console.log("authenticated: ",this.email)
@@ -49,11 +50,31 @@ export class AppTopBarComponent {
             this.visible = false;
         } 
     }
-
-    handleLogOut(){
-        this.tokenStorage.signOut()
-
-        this.router.navigateByUrl('/auth/login')
-        this.messageService.add({ severity: '', summary: 'Déconnecté'});
+    
+    handleLogOut() {
+        console.log("Logout triggered"); // Debugging step
+    
+        this.confirmationService.confirm({
+            message: 'Voulez-vous vraiment vous déconnecter ?',
+            header: 'Confirmer la déconnexion',
+            icon: 'pi pi-info-circle',
+            rejectButtonStyleClass: "p-button-danger p-button-text",
+            acceptButtonStyleClass: "p-button-text p-button-text",
+            acceptIcon: "none",
+            rejectIcon: "none",
+    
+            accept: () => {
+                console.log("Accepted"); // Debugging step
+                this.tokenStorage.signOut();
+                this.router.navigateByUrl('/auth/login');
+                this.messageService.add({ severity: 'success', summary: 'Déconnecté' });
+            },
+            reject: () => {
+                console.log("Rejected"); // Debugging step
+            }
+        });
     }
+    
+    
+    
 }

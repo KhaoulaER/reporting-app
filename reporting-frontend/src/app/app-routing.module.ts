@@ -21,6 +21,7 @@ import { NormeListComponent } from './modules/normes/norme-list/norme-list.compo
 import { ChapitreListComponent } from './modules/normes/chapitre/chapitre-list/chapitre-list.component';
 import { RoleGuard } from './core/guards/role.guard';
 import { PointsControleListComponent } from './modules/normes/chapitre/points-controle/points-controle-list/points-controle-list.component';
+import { RapportComponent } from './modules/rapport/rapport.component';
 
 
 
@@ -57,6 +58,7 @@ const routes: Routes = [
             {path: "", component: HomeAuditorComponent},
             {path: "projets-audit", component: ProjetAuditListComponent},
             { path: 'audit/:normeId', component: AuditComponent },
+            {path: "rapport", component:RapportComponent}
           ]
           //data: { roles: ['admin'] }
         },
@@ -72,6 +74,7 @@ const routes: Routes = [
             {path: "clients", component: ClientsListComponent},
             {path: "audit-manager/:normeId", component:AuditComponent},
             {path: "projects/:managerId", component: ProjetsComponent},
+            {path: "rapport", component:RapportComponent}
           ]
           //data: { roles: ['admin'] }
         },

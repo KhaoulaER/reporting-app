@@ -1,0 +1,6 @@
+.limited-width{
+    max-width: 280px;
+  white-space: normal; /* Allow the text to wrap */
+  word-wrap: break-word; /* Break long words if necessary */
+  overflow-wrap: break-word; /* Ensures compatibility for all browsers */
+}

@@ -3,6 +3,8 @@ import { Injectable } from '@angular/core';
 import { catchError, Observable, of, tap, throwError } from 'rxjs';
 import { Role, User } from '../../modules/user/model/user';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { jwtDecode } from 'jwt-decode'; // Corrected import
+
 
 @Injectable({
   providedIn: 'root'
@@ -29,15 +31,20 @@ export class AuthenticationService {
         if (response.access_token) {
           // Assuming the token is part of the response directly
           localStorage.setItem('access_token', response.access_token);
+          // Decode the token to get user details
+          const decodedToken: any = jwtDecode(response.access_token);
+
+          // Extract user information from the decoded token
           const authUser: User = {
-            id: response.userId || '',
-            firstName: response.given_name || "", 
-            lastName: response.family_name || "",  
-            email: response.email || '',
-            username: response.preferred_username || username,
-            password: "", // Password is not needed here
-            phone: response.phone || '',
-            groups: response.groups ? response.groups[0] : 'UNKNOWN', // Default to UNKNOWN if not available
+            id: decodedToken.sub || '',
+            firstName: decodedToken.given_name || '', 
+            lastName: decodedToken.family_name || '', 
+            fullName: decodedToken.name || '',
+            email: decodedToken.email || '',
+            username: decodedToken.preferred_username || username,
+            password: '', // Password is not needed here
+            phone: decodedToken.phone || '',
+            groups: decodedToken.groups ? decodedToken.groups[0] : 'UNKNOWN', // Default to UNKNOWN if not available
             token: response.access_token
           };
           this.authenticatedUser = authUser;
@@ -53,7 +60,16 @@ export class AuthenticationService {
     );
   }
 
-  
+ 
+  private loadUserFromLocalStorage(): void {
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const userJson = localStorage.getItem('authenticatedUser');
+      if (userJson) {
+        this.authenticatedUser = JSON.parse(userJson);
+        console.log('Loaded user from local storage:', this.authenticatedUser);
+      }
+    }
+  } 
 
   getAuthenticatedUser(): User | null {
     return this.authenticatedUser;
@@ -99,15 +115,6 @@ public tokenValidation(token: string) {
     }
   }
   
-  private loadUserFromLocalStorage(): void {
-    if (typeof window !== 'undefined' && window.localStorage) {
-      const userJson = localStorage.getItem('authenticatedUser');
-      if (userJson) {
-        this.authenticatedUser = JSON.parse(userJson);
-        console.log('Loaded user from local storage:', this.authenticatedUser);
-      }
-    }
-  }
   
   private clearLocalStorage(): void {
     if (typeof window !== 'undefined' && window.localStorage) {

@@ -18,6 +18,17 @@ export class HomeAuditorService {
 
   // count non validated projects
   countNonValidatedProjects(auditorId:string): Observable<number>{
-    return this.http.get<number>(`${this.baseUrl}/count-not-validated-pro/${auditorId}`)
+    return this.http.get<number>(`${this.baseUrl}/affectation/count-not-validated-pro/${auditorId}`)
+  }
+
+  //count unaudited projects
+  countUnauditedProjects(auditorId:string): Observable<number>{
+    return this.http.get<number>(`${this.baseUrl}/affectation/count-not-audited-pro/${auditorId}`)
+  }
+
+  
+  //unaudited projects list
+  UnauditedProjects(auditorId:string): Observable<any[]>{
+    return this.http.get<any[]>(`${this.baseUrl}/affectation/not-audited-pro/${auditorId}`)
   }
 }

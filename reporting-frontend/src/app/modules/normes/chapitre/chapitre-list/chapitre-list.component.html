@@ -1,4 +1,4 @@
-<div class="p-toolbar-group-start" style="margin-bottom: 20px;">
+<div class="p-toolbar-group-start" style="margin-bottom: 20px; display: inline-flex;">
   <button
     pButton
     pRipple
@@ -8,6 +8,31 @@
     class="p-button-info mr-2"
     (click)="showAddForm = true" 
   ></button>
+  <p-fileUpload 
+          mode="basic" 
+          chooseLabel="Charger" 
+          chooseIcon="pi pi-upload"
+          name="file"
+          accept=".xlsx, .xls" 
+          maxFileSize="1000000" 
+        fileSelection="single" 
+          (onSelect)="onSelectFile($event)" />
+  <!-- File upload for Excel containing chapters and control points -->
+    <!--label for="fileUpload">Importer Fichier Excel</label><br-->
+    <!--input 
+    class="upDetails"
+    icon="pi pi-upload"
+        pFileUpload 
+        type="file" 
+        mode="basic" 
+        chooseLabel="Browse" 
+        chooseIcon="pi pi-upload" 
+        name="file" 
+        accept=".xlsx, .xls" 
+        maxFileSize="1000000" 
+        fileSelection="single" 
+        (change)="onSelectFile($event)" /-->
+        
 </div>
 
 <p-card [style]="{width: '90%'}" styleClass="justify-content-center align-items-center">

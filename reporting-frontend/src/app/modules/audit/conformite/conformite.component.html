@@ -30,6 +30,6 @@
 <!-- Radar chart inside a centered modal -->
 <p-dialog header="Graphe de conformité" [modal]="true" [(visible)]="showChartModal" styleClass="chart-dialog" [style]="{height: '750px', width: '850px'}">
   <div class="chart-container" style="display: flex;justify-content: center;align-items: center; height: 555px; width: 740px;">
-    <p-chart type="radar" height="555px" width="740px" [data]="radarChartData" [options]="radarChartOptions"></p-chart>
+    <p-chart #myChart type="radar" height="555px" width="740px" [data]="radarChartData" [options]="radarChartOptions"></p-chart>
   </div>
 </p-dialog>

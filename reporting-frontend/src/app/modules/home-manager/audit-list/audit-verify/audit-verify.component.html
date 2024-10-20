@@ -19,20 +19,20 @@
     <p-table [value]="pcAudits" [paginator]="true" [rows]="5" [responsiveLayout]="'scroll'">
       <ng-template pTemplate="header">
         <tr>
-          <th>Chapitre</th>
+          <!--th>Chapitre</th-->
           <th>Point de Contrôle</th>
           <th>Niveau Maturité</th>
-          <th>Constat</th>
-          <th>Preuve</th>
+          <th class="limited-width">Constat</th>
+          <th class="limited-width">Preuve</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-pcAudit>
         <tr>
-          <td>{{ pcAudit?.pc?.chapitre?.designation }}</td>
+          <!--td>{{ pcAudit?.pc?.chapitre?.designation }}</td-->
           <td>{{ pcAudit?.pc?.designation }}</td>
           <td>{{ pcAudit?.niveau_maturite }}</td>
-          <td>{{ pcAudit?.constat }}</td>
-          <td>{{ pcAudit?.preuve }}</td>
+          <td class="limited-width">{{ pcAudit?.constat }}</td>
+          <td class="limited-width">{{ pcAudit?.preuve }}</td>
         </tr>
       </ng-template>
     </p-table>

@@ -6,10 +6,12 @@ import { PointsControle } from "../points-controle/entities/points-controle.enti
 export class Chapitre {
     @PrimaryGeneratedColumn('uuid')
     id:string;
-    @Column()
+    @Column({nullable: true })    
     titre:string
     @Column({default:null})
     description:string
+    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP'})
+    created_at: Date;
     @ManyToOne(()=> Norme, {cascade: true, onDelete: 'CASCADE'})
     @JoinColumn()
     norme: Norme
@@ -17,7 +19,6 @@ export class Chapitre {
     @OneToMany(() => PointsControle, pointsControle => pointsControle.chapitre)
     pointsControle: PointsControle[];
     
-    constructor(chapitre: Partial<Chapitre>){
-        Object.assign(this, chapitre);
+    constructor(){
     }
 }

@@ -2,7 +2,7 @@
   [normeAdopte]="normeAdopte"
   (clickSave)="savePcAudites()"
   (clickValidate)="disableFormControls()"
-  (clickRepport)="exportToExcel()"
+  (clickRepport)="exportReports()"
 >
 
 </app-audit-head>
@@ -47,24 +47,12 @@
             <!-- Button to open modal -->
             <button pButton type="button" class="btn recom-btn" label="Constat/Preuve" icon="pi pi-pencil" (click)="openModal(chapitres.indexOf(chap), i, point)"></button>
           </td>
-        <!--td>
-          <button *ngIf="!recommandationVisible[i + '-' + i]  && !isInputDisabled()"  pButton label="Recommandation" class="btn recom-btn" (click)="showRecommandation(getPointFormGroup(chapitres.indexOf(chap), i), i + '-' + i)"></button>
-        <textarea
-        *ngIf="recommandationVisible[i + '-' + i] || this.normeAdopte?.validation"
-          rows="8"
-          cols="80" 
-          pInputTextarea 
-          class="form-control flexible-input"
-          formControlName="recommandation"
-        ></textarea>
-        </td-->
-
       </tr>
     </ng-template>
   </p-table>
   <p-card *ngIf="showConformite">
     <h3>Synthèse</h3>
-    <app-conformite ></app-conformite>
+    <app-conformite></app-conformite>
   </p-card>
 </p-card>
 
@@ -82,9 +70,10 @@
           <!-- Display the list of added constats -->
         <ul *ngIf="pointId && constatsMap[pointId]" style="list-style-type: none;padding: 0;">
         <li *ngFor="let constat of constatsMap[pointId]" style="margin-bottom: 10px;">
-          <input type="text" class="form-control" value="{{ constat.constat }}" style="margin-bottom: 10px;width: 460px; max-width: 100%; margin-right: 9px; resize: vertical;"/>
-          <button *ngIf="isManager" pButton class="del-details p-button-rounded" icon="pi pi-trash" (click)="delConstatForever(pointId,constat.constat)"></button>
-          
+          <div style="display: flex; align-items: center;">
+            <input type="text" class="form-control" value="{{ constat.constat }}" style="margin-bottom: 10px; width: 560px; max-width: 100%; margin-right: 9px; resize: vertical;" />
+            <button *ngIf="isManager" pButton class="del-details p-button-rounded" icon="pi pi-trash" (click)="delConstatForever(pointId, constat.constat)"></button>
+          </div>
           <!-- Adjust the field based on your constat object structure -->
         </li>
         </ul>
@@ -109,8 +98,10 @@
       <div class="p-fluid">
       <ul *ngIf="pointId && preuvesMap[pointId]" style="list-style-type: none;padding: 0;">
         <li *ngFor="let preuve of preuvesMap[pointId]" style="margin-bottom: 10px;">
+          <div style="display: flex; align-items: center;">
           <input type="text" class="form-control" value="{{ preuve.preuve }}" style="margin-bottom: 10px;">
           <button *ngIf="isManager" pButton class="del-details p-button-rounded" icon="pi pi-trash" (click)="delPreuveForever(pointId,preuve.preuve)"></button>
+          </div>
           <!-- Adjust the field based on your constat object structure -->
         </li>
       </ul>
@@ -144,7 +135,6 @@
     <button pButton label="Fermer" icon="pi pi-times" class="p-button-secondary" (click)="closeModal()"></button>
   </p-footer>
 </p-dialog>
-
   
 
 

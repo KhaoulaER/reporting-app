@@ -5,6 +5,7 @@ import { MessageService } from 'primeng/api';
 import { Norme } from '../../model/norme';
 import { EventEmitter } from '@angular/core'; 
 
+
 @Component({
   selector: 'app-norme-add',
   templateUrl: './norme-add.component.html',
@@ -23,6 +24,7 @@ export class NormeAddComponent {
     echel: ['',[Validators.required]]
   });
 
+
   constructor(private fb: FormBuilder,
     private normeService:NormesService,
     private messageService: MessageService
@@ -31,6 +33,7 @@ export class NormeAddComponent {
   closeModal(){
     this.clickClose.emit(true);
   }
+
 
   handleAddNorm(){
     const postData={...this.addNormForm.value};

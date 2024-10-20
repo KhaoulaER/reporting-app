@@ -6,6 +6,7 @@ import { Norme } from '../entities/norme.entity';
 import { AuthGuard } from 'nest-keycloak-connect';
 import { RolesGuard } from 'src/gurads/roles.guard';
 import { Groups } from 'src/decos/roles.decorator';
+import { UploadChaptersWithControlPointsDto } from './dto/upload-chapitre-pc';
 //import { AuthInterceptor } from 'src/iam/interceptor/auth.interceptor';
 
 @Controller('chapitres')
@@ -14,6 +15,15 @@ import { Groups } from 'src/decos/roles.decorator';
 //@UseInterceptors(AuthInterceptor)
 export class ChapitresController {
   constructor(private readonly chapitresService: ChapitresService) {}
+
+  //CREATE WITH FILE UPLOADING
+  @Post('upload/:normeId')
+  uploadChaptersWithControlPoints(
+    @Param('normeId') normeId: string,
+    @Body() data: UploadChaptersWithControlPointsDto[]
+  ) {
+    return this.chapitresService.uploadChaptersWithControlPoints(normeId, data);
+  }
 
   @Post(':normeId')
   create(@Param('normeId') normeId:string,@Body() createChapitreDto: CreateChapitreDto) {

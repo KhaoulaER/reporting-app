@@ -25,4 +25,15 @@ export class ConformiteService {
     const sm = res.reduce((acc,courante)=>acc+courante,0);
     return sm/res.length;
   }
+  /*captureChartAsImage(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const canvas = document.getElementById('myChart') as HTMLCanvasElement;
+      if (canvas) {
+        const imageData = canvas.toDataURL('image/png'); // Convert the canvas to a base64 image
+        resolve(imageData);
+      } else {
+        reject('Canvas not found!');
+      }
+    });
+  }*/
 }

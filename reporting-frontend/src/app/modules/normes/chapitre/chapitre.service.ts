@@ -14,6 +14,10 @@ export class ChapitreService {
 
   constructor(private http: HttpClient) { }
 
+  uploadNormDetails(normeId:string,data:any){
+    return this.http.post(`${this.baseUrl}/chapitres/upload/${normeId}`,data)
+  }
+
   addNewChapter(chapitre:Chapitre,normeId:string){
     chapitre.id=UUID.UUID();
     return this.http.post(`${this.baseUrl}/chapitres/${normeId}`, chapitre);

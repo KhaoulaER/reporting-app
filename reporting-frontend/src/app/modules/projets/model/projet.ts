@@ -7,7 +7,7 @@ export interface Projet{
     designation: string,
     date: Date,
     client: Client,
-    manager: User,
+    project_manager: User,
     normeAdopte: NormeAdopte[];
 }
 export interface NormeAdopte {

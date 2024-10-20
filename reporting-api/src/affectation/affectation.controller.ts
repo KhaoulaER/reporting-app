@@ -73,4 +73,16 @@ export class AffectationController {
     const count = this.affectationService.countNotValidatedAffectations(auditorId);
     return count;
   }
+  @Groups('/AUDITOR')
+  @Get('count-not-audited-pro/:auditorId')
+  async countNotAuditedAffectations(@Param('auditorId') auditorId: string){
+    const count = this.affectationService.countUnauditedProjectsForAuditor(auditorId);
+    return count;
+  }
+  @Groups('/AUDITOR')
+  @Get('not-audited-pro/:auditorId')
+  async notAuditedAffectations(@Param('auditorId') auditorId: string){
+    const count = this.affectationService.UnauditedProjectsForAuditor(auditorId);
+    return count;
+  }
 }

@@ -6,9 +6,10 @@ import { Chapitre } from './entities/chapitre.entity';
 import { Norme } from '../entities/norme.entity';
 import { PointsControleModule } from './points-controle/points-controle.module';
 import { KeycloakServiceModule } from 'src/keycloak.module';
+import { PointsControle } from './points-controle/entities/points-controle.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Chapitre,Norme]), PointsControleModule, 
+  imports: [TypeOrmModule.forFeature([Chapitre,Norme,PointsControle]), PointsControleModule, 
   //forwardRef(() => KeycloakServiceModule)
   ],
   controllers: [ChapitresController],

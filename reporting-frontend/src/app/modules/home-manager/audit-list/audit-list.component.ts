@@ -59,11 +59,11 @@ export class AuditListComponent implements OnInit{
         }
 
         console.log('audit control: ', updatedAudit.control);
-        this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Audit Verifié !' });
+        //this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Audit Verifié !' });
       },
       error: (err) => {
         console.error('Error updating audit control state:', err);
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to verify audit.' });
+        //this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to verify audit.' });
       }
     });
     }, 100);

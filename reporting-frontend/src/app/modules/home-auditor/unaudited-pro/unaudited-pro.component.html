@@ -1,0 +1,48 @@
+<p-card [style]="{width: '70%'}" *ngIf="displayUnaudited" styleClass="justify-content-center align-items-center">
+        
+    <h3 class="ml-3 mt-0">Projets non consultés</h3>
+     
+    <p-table class="p-table table-bordered pro-table" styleClass="p-datatable-striped" 
+    [tableStyle]="{'min-width': '50rem'}" [value]="proDetails" [paginator]="true" [rows]="5">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Client</th>
+            <th>Projet</th>
+            <th>Norme</th>
+            <th>Consulter</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-pro>
+          <tr>
+            <td><img [src]="'http://localhost:3000/' + pro?.projet?.client?.logo" alt="" style="width: 50px; height: 50px;"></td>
+            <td>{{ pro?.projet?.designation }}</td>
+            <td><!--ng-container *ngFor="let normeAdopte of pro?.projet?.normeAdopte">
+                {{ normeAdopte?.norme?.projet?.designation }}
+              </ng-container-->
+              <p-dropdown 
+                [options]="pro?.projet?.normeAdopte" 
+                optionLabel="norme.designation"
+                [(ngModel)]="pro.projet.selectedNormeAdopte"
+                placeholder="Choisir une norme">
+                </p-dropdown>
+            </td>
+            <!--td><button pButton class="projetButton" [routerLink]="['/home/projets',norm.id]">Chapitre</button></td-->
+            <td>
+                <!--ng-container *ngFor="let normeAdopte of pro?.projet?.normeAdopte">
+                    <button pButton pRipple style="color: white;" class="del-button c-btn p-button-rounded"
+                      [routerLink]="['/home-auditor/audit',normeAdopte?.id]" style="margin-right: 15px;">
+                      Consulter
+                    </button>
+                  </ng-container-->
+                  <button pButton pRipple 
+                  label="consulter" 
+                  style="color: white;" 
+                  class="del-button p-button-rounded" 
+                  style="margin-right: 15px;" 
+                  (click)="onconsult(pro.projet.selectedNormeAdopte)">
+                </button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-card>

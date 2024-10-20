@@ -45,5 +45,6 @@ export class AuditVerifyComponent implements OnInit{
   onClose(): void {
     this.displayPc = false;
   }
+  
 
 }

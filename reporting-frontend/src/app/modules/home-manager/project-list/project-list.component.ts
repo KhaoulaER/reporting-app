@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { AuthenticationService } from '../../../core/authentication/authentication.service';
 import { HomeManagerService } from '../home-manager.service';
+import { NormeAdopte } from '../../projets/model/projet';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-project-list',
@@ -13,9 +15,12 @@ export class ProjectListComponent implements OnInit{
   proDetails!:any[];
   errorMessage!:string;
   managerId!:string;
+  selectedNorme!:NormeAdopte;
   constructor(
     private authService:AuthenticationService,
-    private homeManagerService:HomeManagerService
+    private homeManagerService:HomeManagerService,
+    private router: Router
+
   ){}
   ngOnInit(): void {
     this.managerId = this.authService.authenticatedUser?.id || '';
@@ -30,10 +35,23 @@ export class ProjectListComponent implements OnInit{
       next: (data)=>{
         console.log(data)
         this.proDetails=data
+        this.proDetails.forEach(pro => {
+          if (pro.normeAdopte && pro.normeAdopte.length > 0) {
+            pro.selectedNorme = pro.normeAdopte[0];
+          }
+        });
       },
       error: (err)=>{
         this.errorMessage = `Erreur: ${err.message}`;
       }
     })
+  }
+
+  onconsult(normeAdopte: NormeAdopte): void {
+    if (normeAdopte && normeAdopte.id) {
+      this.router.navigate(['/home-manager/audit-manager', normeAdopte.id]);
+    } else {
+      console.error('Norme adoptée non valide avec cet id:', normeAdopte.id);
+    }
   }
 }

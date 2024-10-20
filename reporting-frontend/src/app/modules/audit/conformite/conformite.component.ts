@@ -1,16 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { NormeAdopte } from '../../projets/model/projet';
 import { Chapitre } from '../../normes/model/norme';
 import { AuditService } from '../audit.service';
 import { ActivatedRoute } from '@angular/router';
 import { ConformiteService } from './conformite.service';
 import { ChartOptions, ChartType, ChartDataset } from 'chart.js';
+import { UIChart } from 'primeng/chart';
 @Component({
   selector: 'app-conformite',
   templateUrl: './conformite.component.html',
   styleUrl: './conformite.component.css'
 })
 export class ConformiteComponent implements OnInit{
+  @Output() chartImageCaptured: EventEmitter<string> = new EventEmitter<string>(); // Output for the parent component
+  @ViewChild('chart') myChart: UIChart | undefined; // Access PrimeNG chart component
+
   niveauMaturite: string[] = ['Aucun', 'Initial', 'Reproductible', 'Défini', 'Maîtrisé', 'Optimisé'];
   niveauT = ['Non_conforme','Partielle','Totale']
 
@@ -23,12 +27,12 @@ export class ConformiteComponent implements OnInit{
   conformiteVisible$ = this.conformiteService.conformiteVisible$;
   conformiteNorme!:number;
   acc:number = 0;
+  av!:any;
   nvCible:number=80;
   // Configuration du radar chart pour PrimeNG
   public radarChartOptions: any;
   public radarChartData: any;
   showChartModal:boolean=false;
-
 
   constructor(
     private auditService: AuditService,
@@ -54,7 +58,9 @@ export class ConformiteComponent implements OnInit{
       }
       
       console.log('cumule:',this.acc)
-      this.conformiteNorme=this.acc/this.results.length;
+      this.av=(this.acc/this.results.length).toFixed(2)
+      this.conformiteNorme=this.av;
+      
       // Préparer les données pour le radar chart
       const labels = this.results.map(res => res.chapitre);
       const dataValues = this.results.map(res => res.conformite * 100);
@@ -125,10 +131,22 @@ export class ConformiteComponent implements OnInit{
    
   }
 
+  /*captureChartImage(): void {
+    const chartInstance = this.myChart?.chart;
+    if (chartInstance) {
+      const chartCanvas = chartInstance.canvas;
+      const imageUrl = chartCanvas.toDataURL('image/png');
+      this.chartImageCaptured.emit(imageUrl); // Emit captured image
+    } else {
+      this.chartImageCaptured.emit(''); // Emit empty if no chart
+    }
+  }*/
+
   showChart(){
     this.showChartModal=true
   }
 
   
-
+  
+  
 }

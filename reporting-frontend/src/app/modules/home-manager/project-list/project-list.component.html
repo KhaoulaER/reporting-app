@@ -16,17 +16,31 @@
           <tr>
             <td></td>
             <td>{{ pro?.designation }}</td>
-            <td><ng-container *ngFor="let normeAdopte of pro?.normeAdopte">
+            <td><!--ng-container *ngFor="let normeAdopte of pro?.normeAdopte">
                 {{ normeAdopte?.norme?.designation }}
-              </ng-container></td>
+              </ng-container-->
+              <p-dropdown 
+              [options]="pro?.normeAdopte" 
+              optionLabel="norme.designation"
+              [(ngModel)]="pro.selectedNorme"
+              placeholder="Choisir une norme">
+              </p-dropdown>
+            </td>
             <!--td><button pButton class="projetButton" [routerLink]="['/home/projets',norm.id]">Chapitre</button></td-->
             <td>
-                <ng-container *ngFor="let normeAdopte of pro?.normeAdopte">
+                <!--ng-container *ngFor="let normeAdopte of pro?.normeAdopte">
                     <button pButton pRipple style="color: white;" class="del-button c-btn p-button-rounded"
                       [routerLink]="['/home-manager/audit-manager', normeAdopte?.id]" style="margin-right: 15px;">
                       Audit
                     </button>
-                  </ng-container>
+                  </ng-container-->
+                  <button pButton pRipple 
+                  label="consulter" 
+                  style="color: white;" 
+                  class="del-button p-button-rounded" 
+                  style="margin-right: 15px;" 
+                  (click)="onconsult(pro.projet.selectedNorme)">
+                </button>
             </td>
           </tr>
         </ng-template>

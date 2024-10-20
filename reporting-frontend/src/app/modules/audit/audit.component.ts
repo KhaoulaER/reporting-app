@@ -1,5 +1,5 @@
 //////////////////////  WORKING COMPONENT //////////////////////
-import { Component, NgModule, OnInit } from '@angular/core';
+import { Component, NgModule, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { NormeAdopte } from '../projets/model/projet';
@@ -19,7 +19,8 @@ import { TestPromptService } from '../test-prompt/test-prompt.service';
 import { AuthenticationService } from '../../core/authentication/authentication.service';
 import { RoleService } from '../../core/services/role.service';
 import { forkJoin } from 'rxjs';
-
+import { RapportWordService } from '../rapport/rapport-word/rapport-word.service';
+import * as JSZip from 'jszip';
 
 @Component({
   selector: 'app-audit',
@@ -28,7 +29,10 @@ import { forkJoin } from 'rxjs';
 })
 export class AuditComponent implements OnInit {
   //Recuperation des infos a partir de la norme adopte
+ // @ViewChild(ConformiteComponent) conformiteComponent!: ConformiteComponent; // Access ConformiteComponent
+
   auditeurId!:string;
+  manager!:any;
   normeAdopte!: NormeAdopte;
   chapitres!: Chapitre[];
   errorMessage!: string;
@@ -38,6 +42,7 @@ export class AuditComponent implements OnInit {
   niveauT = ['N/A','Non_conforme','Partielle','Totale']
   pointControle!: PointsControle;
   audit!: Audit;
+  auditeur!:any;
 ////// display modall save pc audit
   displayModal: boolean = false;
   niveauInput: string = 'N/A'
@@ -90,6 +95,7 @@ originalEvaluations: any[] = [];
     private auditValidationService: AuditValidationService,
     private conformiteService: ConformiteService,
     private rapportService: RapportService,
+    private rapportWordService: RapportWordService,
     private messageService: MessageService,
     private testPromptService:TestPromptService,
     private authService:AuthenticationService,
@@ -137,7 +143,7 @@ originalEvaluations: any[] = [];
 
   
   ngOnInit(): void {
-  this.auditeurId = this.authService.authenticatedUser?.id || ''; // ID de l'auditeur connecté
+  this.auditeurId = this.authService.authenticatedUser?.fullName || ''; // ID de l'auditeur connecté
   console.log('auditeur id in compo: ', this.auditeurId)
   console.log('is save button: ',this.isSaveButtonVisible())
 
@@ -146,6 +152,10 @@ originalEvaluations: any[] = [];
   if (this.normeId) {
     this.auditService.findNCP(this.normeId).subscribe(data => {
       const projetId = data.nms[0]?.projet?.id;
+      this.manager=data.nms[0]?.projet?.project_manager;
+      
+      
+      console.log('manager',this.manager)
       console.log('pro id role: ', projetId)
       
         this.checkUserRole(projetId);
@@ -154,6 +164,7 @@ originalEvaluations: any[] = [];
   }
   this.loadChapitres();
   this.saveAudit();
+  this.auditeur=this.authService.authenticatedUser
   console.log('evals: ',this.getEvaluations())
   // Initialisation de l'état de validation
   this.auditValidationService.validateButtonClicked$.subscribe(isValidated => {
@@ -907,14 +918,46 @@ getEvaluations(): any[] {
         });
       });
   
-      // Récupérer les données de conformité
-      this.auditService.findTotalNiveau(this.normeId).subscribe(dataConformite => {
-        if(this.normeAdopte?.norme?.echel === '0->3')
-          this.rapportService.generateExcel(formattedData, dataConformite, this.niveauT, 'NS_Rapport', this.normeAdopte);
-        else
-          this.rapportService.generateExcel(formattedData, dataConformite, this.niveau, 'NS_Rapport', this.normeAdopte);
+     // this.conformiteComponent.captureChartImage();
 
+    this.auditService.findTotalNiveau(this.normeId).subscribe(dataConformite => {
+      if (this.normeAdopte?.norme?.echel === '0->3') {
+        this.rapportService.generateExcel(formattedData, dataConformite, this.niveauT, 'NS_Rapport', this.normeAdopte);
+      } else {
+        this.rapportService.generateExcel(formattedData, dataConformite, this.niveau, 'NS_Rapport', this.normeAdopte);
+      }
+    });
+
+    }
+
+    exportToWord():void{
+      const evaluations = this.getEvaluations();
+      const formattedData: any[] = [];
+      evaluations.forEach((evaluation) => {
+        formattedData.push({
+          chapitre: evaluation.pointControle.chapitreTitre,
+          regles: evaluation.pointControle.designation,
+          niveau_maturite: evaluation.niveauMaturite,
+          constat: evaluation.constat,
+          preuve: evaluation.preuve || '',
+          recommandation: evaluation.recommandation
+        });
       });
+
+      
+    this.auditService.findTotalNiveau(this.normeId).subscribe(dataConformite => {
+      if (this.normeAdopte?.norme?.echel === '0->3') {
+        this.rapportWordService.generateWordReport(formattedData, dataConformite, this.niveauT, 'NS_Rapport', this.normeAdopte, this.auditeur,this.manager);
+      } else {
+        this.rapportWordService.generateWordReport(formattedData, dataConformite, this.niveau, 'NS_Rapport', this.normeAdopte, this.auditeur,this.manager);
+      }
+    });
+
+    }
+
+    exportReports(){
+      this.exportToExcel()
+      this.exportToWord()
     }
     
     /////////////////////////// CONFORMITE PAR CHAPITRE ///////////////////////////////////////

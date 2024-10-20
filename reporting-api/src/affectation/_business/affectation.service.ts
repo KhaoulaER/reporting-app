@@ -224,4 +224,34 @@ if (auditorGroup) {
     .andWhere('normeAdopte.validation = :validation',{validation: false})
     .getCount()
   }
+
+  //For auditor 
+  async UnauditedProjectsForAuditor(auditorId: string): Promise<any[]> {
+    return await this.affectationRepository
+      .createQueryBuilder('affectation') // 'affectations' is the table, 'affectation' is the alias
+      .innerJoinAndSelect('affectation.projet', 'projet')
+      .leftJoin('affectation.auditeur', 'user')
+      .leftJoinAndSelect('projet.normeAdopte', 'normeAdopte')
+      .leftJoinAndSelect('projet.client', 'client')
+      .leftJoinAndSelect('normeAdopte.norme', 'norme') // Left join with the audit entity based on auditorId
+      .leftJoin('normeAdopte.audits', 'audit') // Left join with the audit entity based on auditorId
+      .where('audit.id IS NULL') // Only consider projects that have not been audited
+      .andWhere('user.keycloakId = :auditorId', { auditorId })
+      .getMany(); // Count the results
+  }
+
+  //For auditor count number of affected non audited projects
+  async countUnauditedProjectsForAuditor(auditorId: string): Promise<number> {
+    return await this.affectationRepository
+      .createQueryBuilder('affectation') // 'affectations' is the table, 'affectation' is the alias
+      .innerJoin('affectation.projet', 'projet')
+      .leftJoin('affectation.auditeur', 'user')
+      .leftJoin('projet.normeAdopte', 'normeAdopte')
+      .leftJoin('normeAdopte.audits', 'audit') // Left join with the audit entity based on auditorId
+      .where('audit.id IS NULL') // Only consider projects that have not been audited
+      .andWhere('user.keycloakId = :auditorId', { auditorId })
+      .getCount(); // Count the results
+  }
+  
+
 }

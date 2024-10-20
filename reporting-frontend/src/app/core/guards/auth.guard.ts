@@ -76,13 +76,13 @@ export class AuthGuard implements CanActivate {
     private redirectBasedOnRole() {
       if (this.roleService.isAdmin()) {
         this.route.navigate(['/admin']);
-      } else if (this.roleService.isClient()) {
+      }else {
+        this.route.navigate(['/auth/login']);
+      } /*else if (this.roleService.isClient()) {
         this.route.navigate(['/client']);
       } else if (this.roleService.isPentester()) {
         this.route.navigate(['/prestataire']);
-      } else {
-        this.route.navigate(['/auth/login']);
-      }
+      } */
     }
 
   public isAuthenticated(): Observable<{ isAuthenticated: boolean }> {

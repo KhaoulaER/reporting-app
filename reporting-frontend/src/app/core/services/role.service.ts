@@ -53,7 +53,7 @@ export class RoleService {
   }
 
 
-  isClient(): boolean {
+  /*isClient(): boolean {
     const roles = this.getRole();
     return roles ? roles.includes('client') : false;
   }
@@ -61,7 +61,7 @@ export class RoleService {
   isPentester(): boolean {
     const roles = this.getRole();
     return roles ? roles.includes('pentester') : false;
-  }
+  }*/
 
   isManager(): boolean {
     const roles = this.getRole();

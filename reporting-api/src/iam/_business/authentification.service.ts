@@ -402,6 +402,7 @@ export class AuthenticationService {
       let authenticatedUser: any = {
         userId: user['sub'],
         email: user['email'],
+        name: user['name'],
         groups: decodedToken['groups'],
         roles: [
           ...(decodedToken['resource_access'][process.env.KEYCLOAK_CLIENT_ID]?.roles || []),
@@ -418,6 +419,9 @@ export class AuthenticationService {
       if (decoded['acr'] && decoded['acr'] === 'username_password') {
         authenticatedUser = {
           ...authenticatedUser,
+          name: response['name'],
+          given_name: response['given_name'],
+          family_name: response['family_name'],
           access_token: response['access_token'],
           refresh_token: response['refresh_token'],
         };
