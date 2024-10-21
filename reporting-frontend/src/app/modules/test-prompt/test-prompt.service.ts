@@ -8,7 +8,7 @@ import { from, Observable } from 'rxjs';
 })
 export class TestPromptService {
 
-  private apiKey = "YTNx3tJkmY2irjEonNPGhXD7mffqi6tK"
+  private apiKey = "YYYYYYYYYYYYYYYYYYYYYYYYYYYYY"
   private client = new MistralClient(this.apiKey)
   constructor() {
    
