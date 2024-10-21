@@ -57,6 +57,9 @@ export class AuditComponent implements OnInit {
   addedpreuve: string = '';
   addedRecommandation: string = '';
 
+  editedConstat: string='';
+  editConstat:boolean = false;
+  editPreuve:boolean = false;
   selectedPointIndex!: number;
   selectedChapitreIndex!:number;
   selectedPointsControle: PointsControle | null = null;
@@ -164,7 +167,14 @@ originalEvaluations: any[] = [];
   }
   this.loadChapitres();
   this.saveAudit();
-  this.auditeur=this.authService.authenticatedUser
+  //First auditor for a pro with constat
+  this.auditService.getFirstAuditor(this.normeId).subscribe(
+    (data)=>{
+      this.auditeur=data
+      console.log('auditeur ecrit: ',this.auditeur)
+    }
+  )
+  console.log('auditeur ecrit: ',this.auditeur)
   console.log('evals: ',this.getEvaluations())
   // Initialisation de l'état de validation
   this.auditValidationService.validateButtonClicked$.subscribe(isValidated => {
@@ -285,6 +295,8 @@ originalEvaluations: any[] = [];
 
   closeModal(): void {
     this.displayModal = false;
+    this.constatInput=""
+    this.preuveInput=""
   }
 
   createChapitreFormGroup(chapitre: Chapitre, latestEvaluations: any[]): FormGroup {
@@ -515,6 +527,8 @@ delConstatForever(pointId: string, constat: string) {
   } else {
     console.log('PC Audit not found for deletion'); // Debugging line
   }
+
+  
   /*this.confirmationService.confirm({
     message: 'Voulez-vous supprimer ce constat ?',
     header: 'Confirmer la suppression',
@@ -548,7 +562,25 @@ delConstatForever(pointId: string, constat: string) {
   });*/
 }
 
-
+editConstatForever(pointId: string, constat: string){
+  this.constatInput = constat;
+  this.editConstat=true
+}
+EditConstat(pointId:string){
+  this.editedConstat=this.constatInput
+  console.log('edited constat: ',this.editedConstat)
+  this.auditService.updateConstat(this.pointId,this.editedConstat as unknown as PcAudit).subscribe(
+    response => {
+      
+      console.log(response);
+      this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Constat modifié' });
+    },
+    error => {
+      this.messageService.add({ severity: 'error', summary: 'Error', detail: error });
+      console.log('Error occurred');
+    }
+  )
+}
 
 //remove preuve before validating it
 delPreuve():void{
@@ -572,6 +604,14 @@ delPreuveForever(pointId: string, preuve: string){
         }
    
 }
+
+editPreuveForever(pointId: string, preuve: string){
+  this.preuveInput = preuve;
+}
+Editpreuve(){
+
+}
+
 addRecommandation(): void {
   this.recommandationVisible[this.pointId] = true;
   if (!this.isValidateButtonClicked || this.normeAdopte?.validation) {

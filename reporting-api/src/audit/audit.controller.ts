@@ -79,6 +79,12 @@ create(
   }
 
   @Groups('/PROJECT_MANAGER')
+  @Get('audits-history/:managerId')
+  findAuditsHistory(@Param('managerId') managerId:string){
+    return this.auditService.getAuditHistory(managerId)
+  }
+
+  @Groups('/PROJECT_MANAGER')
   @Patch(':id/control')
   async updatecontrolState(@Param('id') id: string, @Body() updateAuditDto:UpdateAuditDto): Promise<any> {
     try {
@@ -93,5 +99,10 @@ create(
     } catch (error) {
       throw new Error(`Failed to update control state: ${error.message}`);
     }
+  }
+
+  @Get('first-auditor/:id')
+  findFirstAuditor(@Param('id') id: string): Promise<User | null>{
+    return this.auditService.getFirstAuditorForNormeAdopte(id);
   }
 }

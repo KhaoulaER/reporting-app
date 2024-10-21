@@ -70,7 +70,8 @@ export class AppMenuComponent implements OnInit {
                 {
                     label: 'Home',
                     items: [
-                        { label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/home-manager'] }
+                        { label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/home-manager'] },
+                        { label: 'Historique', icon: 'pi pi-fw pi-history', routerLink: ['/home-manager/history'] }
                     ]
                 },
                 {

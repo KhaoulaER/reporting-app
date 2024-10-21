@@ -267,6 +267,18 @@ export class PcAuditService {
     }
   }
   
+  async editConstat(pcAuditId: string,updatePcAuditDto:UpdatePcAuditDto): Promise<void> {
+    const pcAudit = await this.pcAuditRepository.findOne({ where: { id: pcAuditId } });
+    
+    if (pcAudit) {
+      pcAudit.constat = updatePcAuditDto.constat; // Update constat to null to effectively remove it
+      await this.pcAuditRepository.save(pcAudit);
+    } else {
+      throw new NotFoundException(`PcAudit with ID ${pcAuditId} not found`);
+    }
+  }
+  
+
   async deletePreuve(pcAuditId: string): Promise<void> {
     const pcAudit = await this.pcAuditRepository.findOne({ where: { id: pcAuditId } });
     

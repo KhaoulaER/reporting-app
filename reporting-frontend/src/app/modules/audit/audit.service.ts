@@ -5,6 +5,7 @@ import { Chapitre, Preuve } from '../normes/model/norme';
 import { NormeAdopte } from '../projets/model/projet';
 import { Audit, PcAudit} from './model/audit';
 import { UUID } from 'angular2-uuid';
+import { User } from '../user/model/user';
 
 @Injectable({
   providedIn: 'root'
@@ -81,8 +82,15 @@ export class AuditService {
     deleteConstat(pcAuditId:string){
       return this.http.patch(`${this.baseUrl}/pc-audit/delete-constat/${pcAuditId}`,null)
     }
+    updateConstat(pcAuditId:string,newConstat:any){
+      return this.http.patch(`${this.baseUrl}/pc-audit/update-constat/${pcAuditId}`,newConstat)
+    }
     deletePreuve(pcAuditId:string){
       return this.http.patch(`${this.baseUrl}/pc-audit/delete-preuve/${pcAuditId}`,null)
+    }
+
+    getFirstAuditor(normeAdopteId:string):Observable<User>{
+      return this.http.get<User>(`${this.baseUrl}/audit/first-auditor/${normeAdopteId}`)
     }
 
 }

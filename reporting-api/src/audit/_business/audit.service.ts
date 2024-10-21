@@ -159,6 +159,26 @@ async getAuditsWithControlFalse(managerId: string) {
     .getMany();
 }
 
+//find histoty audits
+async getAuditHistory(managerId: string) {
+  return await this.auditRepository
+    .createQueryBuilder('audit')
+    .leftJoinAndSelect('audit.norme_projet', 'normeAdopte') // Include related normeAdopte entity
+    .leftJoinAndSelect('normeAdopte.projet', 'projet') // Include related projet entity
+    .leftJoinAndSelect('projet.client','client')
+    .leftJoinAndSelect('normeAdopte.norme', 'norme')
+    .leftJoinAndSelect('projet.project_manager', 'projectManager') // Include related projectManager
+    .leftJoinAndSelect('audit.auditeur', 'auditeur') // Include related auditeur entity
+    .leftJoinAndSelect('audit.pc_audit', 'pcAudit') // Join PcAudit entity
+    .where('projectManager.keycloakId = :managerId', { managerId })
+    .andWhere(
+      new Brackets(qb => {
+        qb.where('pcAudit.constat IS NOT NULL')
+          .orWhere('pcAudit.preuve IS NOT NULL');
+      })
+    ) // Add condition where constat OR preuve is not null
+    .getMany();
+}
 
 //For auditor count number of affected non audited projects
 async countUnauditedProjectsForAuditor(auditorId: string): Promise<number> {
@@ -170,5 +190,29 @@ async countUnauditedProjectsForAuditor(auditorId: string): Promise<number> {
     .getCount();
   
   return query;
+}
+
+
+//First made constat 
+
+async getFirstAuditorForNormeAdopte(normeAdopteId: string): Promise<User | null> {
+  // Query to get the first audit and auditor with a constat
+  const auditWithFirstConstat = await this.auditRepository
+    .createQueryBuilder('audit')
+    .innerJoinAndSelect('audit.auditeur', 'auditeur')
+    .innerJoinAndSelect('audit.pc_audit', 'pc_audit')
+    .where('audit.norme_projet = :normeAdopteId', { normeAdopteId })
+    .andWhere('pc_audit.constat IS NOT NULL')  // Only get audits where a constat is present
+    .orderBy('audit.date_audit', 'ASC')  // Order by date to get the first one
+    .getOne();
+
+  // If an audit with a constat is found, return the auditeur (User)
+  if (auditWithFirstConstat) {
+    console.log('auditor',auditWithFirstConstat.auditeur.firstName)
+    return auditWithFirstConstat.auditeur;
+  }
+  
+  // Return null if no audit found with constat
+  return null;
 }
 }

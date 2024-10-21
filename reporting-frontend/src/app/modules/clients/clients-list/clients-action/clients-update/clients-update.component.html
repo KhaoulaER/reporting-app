@@ -18,6 +18,31 @@
                     </small>
                 </div>
                 <div class="field">
+                    <label for="tel">Nom chef de projet:</label><br>
+                    <input 
+                        type="text" pInputText 
+                        formControlName="nomcp" 
+                        class="w-full" name="nomcp" 
+                    />
+
+                <small *ngIf="nomcp.invalid && (nomcp.dirty || nomcp.touched)" class="block p-error">
+                    <div *ngIf="nomcp.errors?.['required']">Nom du chef de projet est obligatoire.</div>
+                </small>
+            </div>
+            <div class="field">
+            
+                <label for="tel">Prénom chef de projet:</label><br>
+                <input 
+                    type="text" pInputText 
+                    formControlName="prenomcp" 
+                    class="w-full" name="prenomcp" 
+                />
+
+            <small *ngIf="prenomcp.invalid && (prenomcp.dirty || prenomcp.touched)" class="block p-error">
+                <div *ngIf="prenomcp.errors?.['required']">Prénom du chef de projet est obligatoire.</div>
+            </small>
+                    </div>
+                <div class="field">
                      <label for="email">Email</label><br>
                         <input 
                             type="text" pInputText 

@@ -42,6 +42,8 @@ export class ClientsAddComponent implements OnInit{
     this.clientFormGroup = this.fb.group({
     nom: ['',[Validators.required, Validators.pattern(/^[a-zA-Z]+(?: [a-zA-Z]+)*$/)]],
     email: ['', [Validators.required, Validators.email]],
+    nomcp:['',[Validators.required]],
+    prenomcp:['',[Validators.required]],
     tel: ['', [Validators.required]],
     logo: ['',[Validators.required, Validators.max(1000000), Validators.pattern('^.+\.(jpg|jpeg|png)$')]],
     });
@@ -57,6 +59,8 @@ export class ClientsAddComponent implements OnInit{
     formData.append('id',UUID.UUID());
   formData.append('nom', this.clientFormGroup.get('nom')?.value);
   formData.append('email', this.clientFormGroup.get('email')?.value);
+  formData.append('nomcp',this.clientFormGroup.get('nomcp')?.value);
+  formData.append('prenomcp',this.clientFormGroup.get('prenomcp')?.value);
   formData.append('tel', this.clientFormGroup.get('tel')?.value);
   if (this.selectedFile) {
     formData.append('logo', this.selectedFile, this.selectedFile.name);
@@ -87,6 +91,12 @@ export class ClientsAddComponent implements OnInit{
    get email(){
     return this.clientFormGroup.controls['email'];
    }
+   get nomcp(){
+    return this.clientFormGroup.controls['nomcp'];
+  }
+  get prenomcp(){
+    return this.clientFormGroup.controls['prenomcp'];
+  }
    get tel(){
     return this.clientFormGroup.controls['tel'];
    }

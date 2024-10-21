@@ -175,9 +175,10 @@ console.log('Grouped Control Point Tables:', controlPointTables);
     doc.setData({
       CLIENT: normeAdopte?.projet?.client?.nom,
       NORME: normeAdopte?.norme?.designation,
+      clientChef:normeAdopte?.projet?.client?.nomcp +' '+ normeAdopte?.projet?.client?.prenomcp,
       manager: manager.firstName +' '+ manager.lastName,
       managerEmail: manager.email,
-      auditeur: auditeur?.fullName ,
+      auditeur: auditeur?.firstName +' '+auditeur?.lastName ,
       auditeurEmail:auditeur?.email,
       TotalPc: totalControlPoints,
       avConformite: averageConformite.toFixed(2),

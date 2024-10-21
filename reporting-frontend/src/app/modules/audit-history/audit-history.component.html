@@ -1,0 +1,34 @@
+<p-card [style]="{width: '70%'}"  styleClass="justify-content-center align-items-center">
+        
+    <h3 class="ml-3 mt-0">Historique des audits</h3>
+     
+    <p-table class="p-table table-bordered audit-table" styleClass="p-datatable-striped" 
+    [tableStyle]="{'min-width': '50rem'}" [value]="audits" [paginator]="true" [rows]="5">
+        <ng-template pTemplate="header">
+          <tr>
+            <th></th>
+            <th>Date</th>
+            <th>Projet</th>
+            <th>Norme</th>
+            <th>Auditeur</th>
+            <th>Verifier</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-audit>
+          <tr>
+            <td></td>
+            <td>{{ audit?.date_audit | date: 'dd/MM/yyyy, HH:mm' }}</td>
+            <td>{{ audit?.norme_projet?.projet?.designation }}</td>
+            <td>{{ audit?.norme_projet?.norme?.designation }}</td>
+            <td>{{ audit?.auditeur?.firstName }} {{ audit?.auditeur?.lastName }}</td>
+           <td><button pButton (click)="handleAuditDetails(audit)" class="btn " label="Vérifier"></button></td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-card>
+    <app-audit-history-details
+      [displayPc]="displayPc"
+      [selectedAudit]="selectedAudit"
+    >
+
+    </app-audit-history-details>

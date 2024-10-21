@@ -27,6 +27,8 @@ export class ClientsUpdateComponent implements OnChanges {
     nom: ['', [Validators.required]],
     email: ['', [Validators.required]],
     tel: ['', [Validators.required]],
+    nomcp:['',[Validators.required]],
+    prenomcp:['',[Validators.required]],
     logo: ['']
   });
 
@@ -63,7 +65,12 @@ export class ClientsUpdateComponent implements OnChanges {
   get email() {
     return this.updateClientForm.controls['email'];
   }
-
+  get nomcp(){
+    return this.updateClientForm.controls['nomcp'];
+  }
+  get prenomcp(){
+    return this.updateClientForm.controls['prenomcp'];
+  }
   get tel() {
     return this.updateClientForm.controls['tel'];
   }

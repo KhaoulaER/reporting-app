@@ -93,6 +93,11 @@ export class PcAuditController {
     return this.pcAuditService.update(id, updatePcAuditDto);
   }
 
+  @Patch('update-constat/:id')
+  async updateConstat(@Param('id') pcAuditId:string, @Body() updatePcAuditDto:UpdatePcAuditDto){
+    return this.pcAuditService.editConstat(pcAuditId,updatePcAuditDto);
+  }
+
 @Patch('delete-constat/:id')
 async deleteConstat(@Param('id') pcAuditId: string): Promise<void> {
   return this.pcAuditService.deleteConstat(pcAuditId);

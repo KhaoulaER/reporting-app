@@ -28,6 +28,10 @@ export class ClientsService {
   async update(id: string, updateClientDto: UpdateClientDto) {
     const client = await this.clientRepository.findOneBy({id});
     client.nom=updateClientDto.nom;
+    client.nomcp=updateClientDto.nomcp;
+    client.prenomcp=updateClientDto.prenomcp;
+    client.email=updateClientDto.email;
+    client.tel=updateClientDto.tel
     await this.entityManager.save(client);
   }
 

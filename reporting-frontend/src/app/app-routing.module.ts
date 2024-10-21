@@ -22,6 +22,8 @@ import { ChapitreListComponent } from './modules/normes/chapitre/chapitre-list/c
 import { RoleGuard } from './core/guards/role.guard';
 import { PointsControleListComponent } from './modules/normes/chapitre/points-controle/points-controle-list/points-controle-list.component';
 import { RapportComponent } from './modules/rapport/rapport.component';
+import { AuditListComponent } from './modules/home-manager/audit-list/audit-list.component';
+import { AuditHistoryComponent } from './modules/audit-history/audit-history.component';
 
 
 
@@ -72,6 +74,7 @@ const routes: Routes = [
           children:[
             {path: "", component: HomeManagerComponent},
             {path: "clients", component: ClientsListComponent},
+            {path: "history",component:AuditHistoryComponent},
             {path: "audit-manager/:normeId", component:AuditComponent},
             {path: "projects/:managerId", component: ProjetsComponent},
             {path: "rapport", component:RapportComponent}

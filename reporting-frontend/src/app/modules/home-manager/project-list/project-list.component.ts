@@ -30,28 +30,32 @@ export class ProjectListComponent implements OnInit{
       }
   }
 
-  loadProjectDetails(managerId:string){
+  loadProjectDetails(managerId: string) {
     this.homeManagerService.getProjects(managerId).subscribe({
-      next: (data)=>{
-        console.log(data)
-        this.proDetails=data
+      next: (data) => {
+        console.log(data);
+        this.proDetails = data;
         this.proDetails.forEach(pro => {
           if (pro.normeAdopte && pro.normeAdopte.length > 0) {
-            pro.selectedNorme = pro.normeAdopte[0];
+            pro.selectedNorme = pro.normeAdopte[0]; // Set first norme by default
+          } else {
+            pro.selectedNorme = null; // Handle case where no norme is available
           }
         });
       },
-      error: (err)=>{
+      error: (err) => {
         this.errorMessage = `Erreur: ${err.message}`;
       }
-    })
+    });
   }
+  
 
-  onconsult(normeAdopte: NormeAdopte): void {
+  onconsult(normeAdopte: NormeAdopte | null): void {
     if (normeAdopte && normeAdopte.id) {
+      console.log('norm id', normeAdopte.id);
       this.router.navigate(['/home-manager/audit-manager', normeAdopte.id]);
     } else {
-      console.error('Norme adoptée non valide avec cet id:', normeAdopte.id);
+      console.error('Norme adoptée non valide ou inexistante');
     }
   }
 }

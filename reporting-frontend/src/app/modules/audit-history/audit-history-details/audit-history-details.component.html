@@ -1,0 +1,43 @@
+<p-dialog header="Vérification des Points de Contrôle" [(visible)]="displayPc" [style]="{width: '80vw'}" [modal]="true" [closable]="true" (onHide)="onClose()">
+    <p-card class="mb-2">
+        <div class="" style="display: inline-block;">
+            <img [src]="'http://localhost:3000/' + selectedAudit?.norme_projet?.projet?.client?.logo">
+        </div>
+    <div style="margin-left: 300px;display: inline-block;">
+    <div style="display: inline-block;">
+    <label for="">Date d'audit: </label><input type="text" class="form-control mr-3 mb-4" value="{{ selectedAudit?.date_audit | date: 'dd/MM/yyyy, HH:mm' }}" style="width: 220px;" disabled>
+    <label for="">Auditeur: </label><input type="text" class="form-control" value="{{selectedAudit?.auditeur?.firstName}} {{selectedAudit?.auditeur?.lastName}}" style="width: 220px;" disabled>
+
+    </div>
+    <div style="display: inline-block;">
+        <label for="">Projet: </label><input type="text" class="form-control mr-3 mb-4" value="{{selectedAudit?.norme_projet?.projet?.designation}}" style="width: 220px;" disabled>
+        <label for="">Norme: </label><input type="text" class="form-control" value="{{selectedAudit?.norme_projet?.norme?.designation}}" style="width: 220px;" disabled>
+    
+    </div>
+    </div>
+    </p-card>
+    <p-table [value]="pcAudits" [paginator]="true" [rows]="5" [responsiveLayout]="'scroll'">
+      <ng-template pTemplate="header">
+        <tr>
+          <!--th>Chapitre</th-->
+          <th>Point de Contrôle</th>
+          <th>Niveau Maturité</th>
+          <th class="limited-width">Constat</th>
+          <th class="limited-width">Preuve</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-pcAudit>
+        <tr>
+          <!--td>{{ pcAudit?.pc?.chapitre?.designation }}</td-->
+          <td>{{ pcAudit?.pc?.designation }}</td>
+          <td>{{ pcAudit?.niveau_maturite }}</td>
+          <td class="limited-width">{{ pcAudit?.constat }}</td>
+          <td class="limited-width">{{ pcAudit?.preuve }}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+    <p-footer>
+      <button pButton type="button" label="Fermer" icon="pi pi-times" (click)="onClose()"></button>
+    </p-footer>
+  </p-dialog>
+  

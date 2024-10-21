@@ -6,6 +6,10 @@ export class Client {
     id: string;
     @Column()
     nom: string;
+    @Column({nullable:true})
+    nomcp:string;
+    @Column({nullable:true})
+    prenomcp:string
     @Column()
     logo: string;
     @Column()
