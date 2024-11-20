@@ -1,6 +1,7 @@
-<p-dialog header="Auditeurs" [modal]="true" [(visible)]="showAuditors" [style]="{ height: '600px',width:'670px'}" styleClass="justify-content-center align-items">
-
-    <div class="p-toolbar-group-start" style="margin-bottom: 20px;">
+<p-dialog header="Auditeurs" [modal]="true" [(visible)]="showAuditors"
+          [style]="{ height: '600px', width: '770px' }"
+          styleClass="justify-content-center align-items"
+          (onHide)="onDialogHide()">    <div class="p-toolbar-group-start" style="margin-bottom: 20px;">
         <button
           pButton
           pRipple
@@ -13,11 +14,11 @@
       </div>
     <!-- Formulaire pour ajouter une nouvelle affectation -->
     <div *ngIf="showAddForm" class="add-form">
-        <app-affectation-add [selectedPro]="selectedPro" (clickAdd)="addAffectation($event)" (clickClose)="onCancel($event)"></app-affectation-add>
+        <app-affectation-add [selectedPro]="selectedPro" (clickAdd)="addAffectation($event)" (clickClose)="onCancel()"></app-affectation-add>
         
     </div>
-    
-    <h4 class="ml-3 mt-0">Liste des Auditeurs</h4>
+
+    <h4 class="ml-3 mt-2">Liste des Auditeurs</h4>
     
         
         <p-table [value]="affectations" [paginator]="true" [rows]="5">
@@ -36,6 +37,7 @@
                         <option value="">{{affectation.droit}}</option>
                         <option *ngFor="let droit of droits" [value]="droit">{{droit}}</option>
                     </select>
+                   
                     <!--p-dropdown 
                   [options]="droits" 
                   optionLabel="affectation.droit"
@@ -50,4 +52,4 @@
             </tr>
             </ng-template>
         </p-table>
-        </p-dialog>
+</p-dialog>

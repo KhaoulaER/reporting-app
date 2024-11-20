@@ -42,7 +42,7 @@ export class ChapitresService {
       for (const pc of item.pointsControle) {
         const pointControle = this.pointsControleRepository.create({
           designation: pc.designation,
-          objectif: pc.objectif,
+          //objectif: pc.objectif,
           chapitre: savedChapitre // associate with the chapter
         });
         await this.pointsControleRepository.save(pointControle);

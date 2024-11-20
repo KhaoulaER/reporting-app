@@ -1,15 +1,16 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ConfirmationService, MenuItem, MessageService } from 'primeng/api';
 import { LayoutService } from "./service/app.layout.service";
 import { AuthenticationService } from '../../core/authentication/authentication.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TokenStorageService } from '../../core/services/token-storage.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
     selector: 'app-topbar',
     templateUrl: './app.topbar.component.html'
 })
-export class AppTopBarComponent {
+export class AppTopBarComponent implements OnInit{
     public visible:boolean=false;
 
 
@@ -29,13 +30,18 @@ export class AppTopBarComponent {
         public confirmationService: ConfirmationService,
         public route:ActivatedRoute,
         public router:Router,
-        public tokenStorage:TokenStorageService
+        public tokenStorage:TokenStorageService,
+        public translate: TranslateService
     ) {
         this.fullName = authService.authenticatedUser?.fullName;
         this.lastName = authService.authenticatedUser?.lastName;
         this.email = authService.authenticatedUser?.email;
         //console.log("authenticated: ",this.email)
      }
+    ngOnInit(): void {
+        const lang = localStorage.getItem('language') || 'fr';
+        this.translate.use(lang);
+    }
     
 
      handleChangePwd(){
@@ -75,6 +81,10 @@ export class AppTopBarComponent {
         });
     }
     
+    switchLanguage(lang: string) {
+        this.translate.use(lang);
+        localStorage.setItem('language', lang);
+      }
     
     
 }

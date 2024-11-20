@@ -1,7 +1,7 @@
 <app-audit-head
   [normeAdopte]="normeAdopte"
   (clickSave)="savePcAudites()"
-  (clickValidate)="disableFormControls()"
+  (clickValidate)="loadChapitres()"
   (clickRepport)="exportReports()"
 >
 
@@ -26,7 +26,7 @@
     <ng-template pTemplate="header">
       <tr style="font-family: Sans-serif;">
         <th>Chapitre</th>
-        <th>Objectif</th>
+        <!--th>Objectif</th-->
         <th>Points de contrôle</th>
         <th>Constat Near Secure</th>
       </tr>
@@ -36,9 +36,9 @@
         <td [attr.rowspan]="chap.pointsControle.length + 1" style="width: 248px;">{{ chap.titre }}</td>
       </tr>
       <tr *ngFor="let point of chap.pointsControle; let i = index" [formGroup]="getPointFormGroup(chapitres.indexOf(chap), i)">
-        <td *ngIf="shouldDisplayObjectif(point, i, chap.pointsControle)" [attr.rowspan]="getRowspan(point, i, chap.pointsControle)" style="width: 400px;">
+        <!--td *ngIf="shouldDisplayObjectif(point, i, chap.pointsControle)" [attr.rowspan]="getRowspan(point, i, chap.pointsControle)" style="width: 400px;">
           {{ point.objectif }}
-        </td>
+        </td-->
         
         <td>
           <input type="text" class="form-control" value="{{ point.designation }}"  disabled></td>
@@ -73,7 +73,9 @@
           <div style="display: flex; align-items: center;">
             <input type="text" class="form-control" value="{{ constat.constat }}" style="margin-bottom: 10px; width: 560px; max-width: 100%; margin-right: 9px; resize: vertical;" />
             <button *ngIf="isManager" pButton class="del-details p-button-rounded" icon="pi pi-trash" (click)="delConstatForever(pointId, constat.constat)"></button>
-            <button *ngIf="isManager" pButton class="edit-det p-button-rounded" icon="pi pi-pencil" (click)="editConstatForever(pointId, constat.constat)"></button>
+            <button *ngIf="isManager" pButton class="edit-det p-button-rounded" icon="pi pi-pencil" (click)="editConstatForever(pointId, constat.constat)"></button>            
+            <button *ngIf="!isManager" pButton class="edit-det p-button-rounded" icon="pi pi-eye" (click)="editConstatForever(pointId, constat.constat)"></button>
+
           </div>
           <!-- Adjust the field based on your constat object structure -->
         </li>
@@ -88,9 +90,9 @@
           class="form-control mb-2"
           *ngIf="!isReadOnly || isManager"
           pInputTextarea></textarea>
-          <button pButton label="Modifier" class="det-btn" (click)="EditConstat(pointId)" *ngIf="editConstat===true" [disabled]="normeAdopte?.validation" style="margin-bottom: 7px;"></button>
+          <button pButton label="Modifier" class="det-btn" (click)="EditConstat(pointId,prevConstat)" *ngIf="editConstat===true && isManager" [disabled]="normeAdopte?.validation" style="margin-bottom: 7px;"></button>
 
-        <button pButton label="Ajouter" class="btn det-btn" *ngIf="!isReadOnly || isManager" (click)="addConstat()" [disabled]="normeAdopte?.validation"></button>
+        <button pButton label="Ajouter" class="btn det-btn" *ngIf="!isReadOnly || isManager || !editConstat" (click)="addConstat()" [disabled]="normeAdopte?.validation"></button>
 
         
       </div>
@@ -105,6 +107,7 @@
           <input type="text" class="form-control" value="{{ preuve.preuve }}" style="margin-bottom: 10px;">
           <button *ngIf="isManager" pButton class="del-details p-button-rounded" icon="pi pi-trash" (click)="delPreuveForever(pointId,preuve.preuve)"></button>
           <button *ngIf="isManager" pButton class="edit-det p-button-rounded" icon="pi pi-pencil" (click)="editPreuveForever(pointId, preuve.preuve)"></button>
+          <button *ngIf="!isManager" pButton class="edit-det p-button-rounded" icon="pi pi-eye" (click)="editPreuveForever(pointId, preuve.preuve)"></button>
 
           </div>
           <!-- Adjust the field based on your constat object structure -->
@@ -117,7 +120,7 @@
         <textarea [(ngModel)]="preuveInput" 
         class="form-control mb-2"
          rows="3" pInputTextarea *ngIf="!isReadOnly || isManager"></textarea>
-         <button pButton label="Modifier" class="det-btn" (click)="Editpreuve()" *ngIf="!isReadOnly || isManager" [disabled]="normeAdopte?.validation" style="margin-bottom: 7px;"></button>
+         <button pButton label="Modifier" class="det-btn" (click)="Editpreuve(pointId,prevPreuve)" *ngIf="editPreuve === true && isManager" [disabled]="normeAdopte?.validation" style="margin-bottom: 7px;"></button>
         <button pButton label="Ajouter" class="det-btn" (click)="addpreuve()" *ngIf="!isReadOnly || isManager" [disabled]="normeAdopte?.validation"></button>
       </div>
     </p-card>
@@ -125,11 +128,23 @@
     <!-- Third card for recommendations input -->
     <p-card header="Recommandation" styleClass="mb-3">
       <div class="p-fluid">
+        <ul *ngIf="pointId && recomMap[pointId]" style="list-style-type: none;padding: 0;">
+          <li *ngFor="let recommandation of recomMap[pointId]" style="margin-bottom: 10px;">
+            <div style="display: flex; align-items: center;">
+            <input type="text" class="form-control" value="{{ recommandation.recommandation }}" style="margin-bottom: 10px;">
+            <button *ngIf="isManager" pButton class="del-details p-button-rounded" icon="pi pi-trash" (click)="delRecommandationForever(pointId,recommandation.recommandation)"></button>
+            <button *ngIf="isManager" pButton class="edit-det p-button-rounded" icon="pi pi-pencil" (click)="editRecommandationForever(pointId,recommandation.recommandation)"></button>
+            <button *ngIf="!isManager" pButton class="edit-det p-button-rounded" icon="pi pi-eye" (click)="editRecommandationForever(pointId,recommandation.recommandation)"></button>
+
+            </div>
+            <!-- Adjust the field based on your constat object structure -->
+          </li>
+        </ul>
                <textarea 
-        *ngIf="recommandationVisible[pointId] || this.normeAdopte?.validation"
         [(ngModel)]="recommandationInput" 
         class="form-control mb-2 recom-box" rows="7" pInputTextarea></textarea>
-        <button pButton label="Génerer les recommandations" class="det-btn" (click)="addRecommandation()"></button>
+        <button pButton label="Modifier" class="det-btn" (click)="Editrecommadation(pointId,prevRecommadation)" *ngIf="editRecommadation === true && isManager" [disabled]="normeAdopte?.validation" style="margin-bottom: 7px;"></button>
+        <button pButton label="Génerer les recommandations" class="det-btn" (click)="addRecommandation()" [disabled]="normeAdopte?.validation"></button>
         <!--div *ngIf="addedRecommandation">{{ addedRecommandation }}</div-->
       </div>
     </p-card>

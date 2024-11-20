@@ -77,6 +77,10 @@ export class AffectationAddComponent implements OnChanges{
       }
     );
   }*/
+
+    formatFullName(auditeur: any): string {
+      return `${auditeur.firstName} ${auditeur.lastName}`;
+  }
   
   onSubmit(){
     if(this.addAffectation.valid){
@@ -99,6 +103,7 @@ export class AffectationAddComponent implements OnChanges{
       this.affectationService.createAffectation(affectationData as Affectation).subscribe(
         response => {
           this.clickAdd.emit(response);
+          this.addAffectation.reset()
           this.closeAdd();
           this.showAddForm = false;
           console.log('auditeur affecté: ', response);

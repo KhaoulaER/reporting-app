@@ -17,14 +17,19 @@
             <i class="pi pi-sign-out" style="color:red;"></i>
             <span>Déconnexion</span>
         </button>
-        <button class="p-link layout-topbar-button">
-            <i class="pi pi-user"></i>
-            <span>{{fullName}}</span>
-        </button>
         <button class="p-link layout-topbar-button" (click)="handleChangePwd()">
             <i class="pi pi-cog"></i>
             <span>Settings</span>
         </button>
+        <button class="p-link layout-topbar-button">
+            <i class="pi pi-user"></i>
+            <span>Bienvenue</span>
+        </button><span><b>{{fullName}}</b></span>
+        <!--div>
+            <h1>{{ 'HOME.WELCOME' | translate }}</h1>
+            <button (click)="switchLanguage('en')">English</button>
+            <button (click)="switchLanguage('fr')">Français</button>
+          </div-->
     </div>
 </div>
 <app-credential-change

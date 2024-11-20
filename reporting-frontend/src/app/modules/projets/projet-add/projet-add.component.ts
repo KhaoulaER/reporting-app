@@ -19,7 +19,7 @@ export class ProjetAddComponent implements OnInit{
   
 
 
-  @Input() visible: boolean = true;
+  @Input() visible: boolean = false;
   @Output() clickClose: EventEmitter<boolean>=new EventEmitter<boolean>();
   @Output() clickAdd: EventEmitter<any>=new EventEmitter<any>();
   projetForm: FormGroup;
@@ -86,5 +86,10 @@ export class ProjetAddComponent implements OnInit{
         this.visible = false;
       });
     }
+  }
+
+  onDialogHide(): void {
+    this.projetForm.reset()
+    this.clickClose.emit(true);
   }
 }

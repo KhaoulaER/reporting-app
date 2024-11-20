@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit ,ChangeDetectorRef } from '@angular/core';
+
 import { NormeAdopte, Projet } from '../model/projet';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -59,7 +60,7 @@ export class ProjetListComponent implements OnInit{
 
   handleDeleteProjet(projet: Projet){
     this.confirmationService.confirm({
-      message: 'Voulez vous suppromer ce projet ?',
+      message: 'Voulez vous supprimer ce projet ?',
       header: 'Confirmer la suppression',
       icon: 'pi pi-info-circle',
       rejectButtonStyleClass:"p-button-danger p-button-text",
@@ -70,7 +71,7 @@ export class ProjetListComponent implements OnInit{
         this.projetService.removeProjet(projet).subscribe(
           response => {
             this.projets = this.projets.filter(data => data.id !== projet.id);
-            this.messageService.add({ severity: 'info', summary: 'Confirmé', detail: 'Auditeur supprimée' });
+            this.messageService.add({ severity: 'info', summary: 'Confirmé', detail: 'Projet supprimé' });
           },
           error => {
             this.messageService.add({ severity: 'error', summary: 'Rejecté', detail: 'Vous avez refusé' });
@@ -119,8 +120,17 @@ export class ProjetListComponent implements OnInit{
 
 
   //GESTION DES AFFECTATIONS
-  handleAffectation(projet:Projet){
-    this.selectedPro=projet;
-    this.showAuditors=true;
+  handleAffectation(projet: Projet) {
+    this.selectedPro = projet;
+    setTimeout(() => {
+      this.showAuditors = true;
+    }, 0);
   }
+  cancelAffectation() {
+    setTimeout(() => {
+      this.showAuditors = false;
+    }, 0);
+    this.loadProjet();
+  }
+  
 }

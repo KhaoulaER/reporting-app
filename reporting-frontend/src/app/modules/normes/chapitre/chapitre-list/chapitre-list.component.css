@@ -19,4 +19,13 @@
     background-color: white;
     border-color: #000;
     color: #000;
-}
+}/* Target the basic mode file upload button */
+
+
+/* Styling for the upload component container */
+/*.custom-file-upload {
+    background-color: #f2f2f2; /* Adjust container background */
+/*    padding: 10px; /* Optional: add padding */
+  /*  border-radius: 8px; /* Border radius for container */
+    /*border: 1px solid #30D5C8; /* Optional: border color */
+/*}*/

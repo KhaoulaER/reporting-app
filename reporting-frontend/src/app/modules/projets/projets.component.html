@@ -9,12 +9,14 @@
       (click)="showAddModal($event)"
     ></button>
   </div>
-<app-projet-list></app-projet-list>
+<app-projet-list
+  
+></app-projet-list>
 
 <app-projet-add
         [visible]="visible"
         (clickAdd)="saveProjet($event)"
-        (clickClose)="onCancel($event)"
+        (clickClose)="onCancel()"
       >
 
       </app-projet-add>

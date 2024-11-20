@@ -31,7 +31,7 @@ export class AuditComponent implements OnInit {
   //Recuperation des infos a partir de la norme adopte
  // @ViewChild(ConformiteComponent) conformiteComponent!: ConformiteComponent; // Access ConformiteComponent
 
-  auditeurId!:string;
+  auditeurName!:string;
   manager!:any;
   normeAdopte!: NormeAdopte;
   chapitres!: Chapitre[];
@@ -63,11 +63,18 @@ export class AuditComponent implements OnInit {
   selectedPointIndex!: number;
   selectedChapitreIndex!:number;
   selectedPointsControle: PointsControle | null = null;
+  prevConstat:string='';
+  prevPreuve:string='';
+  editedPreuve!: string;
+  editedRecommandation!:string;
+  prevRecommadation!:string;
+  editRecommadation:boolean=false;
 
   // Create a map to store constats for each pointControle by its ID
   constatsMap: { [point: string]: any[] }={};
   preuvesMap: { [point: string]: any[] }={};
   niveauMap: { [point: string]: any} = {}
+  recomMap: { [point: string]: any} = {}
   allConstats:any[]=[];
   //PREUVES
   visible = false;
@@ -146,8 +153,8 @@ originalEvaluations: any[] = [];
 
   
   ngOnInit(): void {
-  this.auditeurId = this.authService.authenticatedUser?.fullName || ''; // ID de l'auditeur connecté
-  console.log('auditeur id in compo: ', this.auditeurId)
+  this.auditeurName = this.authService.authenticatedUser?.fullName || '';
+  console.log('auditeur id in compo: ', this.auditeurName)
   console.log('is save button: ',this.isSaveButtonVisible())
 
   this.normeId = this.route.snapshot.paramMap.get('normeId')!;
@@ -193,6 +200,8 @@ originalEvaluations: any[] = [];
         this.normeAdopte = data.nms[0];
         this.chapitres = data.nms[0].norme.chapitre;
         this.initializeForms(data.latestEvaluations);
+
+
        /* this.originalEvaluations = this.getEvaluations().filter(evaluation => {
           return evaluation.niveauMaturite || evaluation.constat || evaluation.preuve;
         }) || [];        
@@ -239,6 +248,15 @@ originalEvaluations: any[] = [];
               console.error(`Failed to load constats for point: ${pointId}`, err);
             }
           });
+          //Fetch generated recommandations
+          this.auditService.findRecommandationForPoint(pointId,this.normeId).subscribe({
+            next: (recommandation) => {
+              this.recomMap[pointId] = recommandation || ''
+            },
+            error: (err) => {
+              console.error(`Failed to load recoms for point: ${pointId}`, err);
+            }
+          })
     
            // Fetch the existing niveau maturite for the control point
       this.auditService.findNiveau(pointId, this.normeId).subscribe({
@@ -267,7 +285,7 @@ originalEvaluations: any[] = [];
     }
 
 
-  ////////////////////////////////////////// CREATION ET INITIALISATION DU FORM ARRAY /////////////////////////
+  ////////////////////////////////////////// CREATE AND INITIIALIZE FORM ARRAY /////////////////////////
   initializeForms(latestEvaluations: any[]): void {
     const chapitresFormArray = this.chapitreForms.get('chapitres') as FormArray;
     this.chapitres.forEach(chapitre => {
@@ -297,6 +315,8 @@ originalEvaluations: any[] = [];
     this.displayModal = false;
     this.constatInput=""
     this.preuveInput=""
+    this.addedConstat=""
+    this.addedpreuve=""
   }
 
   createChapitreFormGroup(chapitre: Chapitre, latestEvaluations: any[]): FormGroup {
@@ -325,7 +345,7 @@ originalEvaluations: any[] = [];
     return pointFormGroup;
   }
 
-  // In your component's TypeScript file
+  //Display objective
 shouldDisplayObjectif(point: any, index: number, pointsControle: any[]): boolean {
   // Show the objectif only if it's the first time it's encountered or it's different from the previous one
   return index === 0 || point.objectif !== pointsControle[index - 1].objectif;
@@ -344,31 +364,6 @@ getRowspan(point: any, index: number, pointsControle: any[]): number {
   return rowspan;
 }
 
-  // Méthode pour afficher la recommendation
- /* showRecommandation(pointFormGroup: FormGroup, pointIndex: string): void {
-    this.recommandationVisible[pointIndex] = true;
-    if (!this.isValidateButtonClicked || this.normeAdopte?.validation) {
-      this.generateRecommandation(pointFormGroup);
-    }
-  }
- // Méthode de génération de recommendation
- generateRecommandation(pointFormGroup: FormGroup): void {
-  const norme = this.normeAdopte.norme.designation;
- // const pc = pointFormGroup.get('designation')?.value;
- const pc = this.selectedPointsControle?.designation
-  console.log('pc:',pc)
-  //const constat = pointFormGroup.get('constat')?.value;
-  const constat = this.constatsMap[this.pointId]
-  console.log('constats for recom: ', constat)
-  this.testPromptService.testPrompt(norme, pc, constat).subscribe({
-    next: (response) => {
-      pointFormGroup.get('recommandation')?.setValue(response.recommandation);
-    },
-    error: (err) => {
-      console.error('Error generating recommandations:', err);
-    }
-  });
-}*/
  
 generateRecommandations(): void {
   const norme = this.normeAdopte.norme.designation;
@@ -389,7 +384,7 @@ generateRecommandations(): void {
 
  
 }
- /////////////////////////////////// RECUPERER LES POINTS DE CONTROLE PAR CHAPITRE /////////////////////
+ /////////////////////////////////// GET POINTS DE CONTROLE BY CHAPTER /////////////////////
   getPointFormGroup(chapitreIndex: number, pointIndex: number): FormGroup {
     const chapitresFormArray = this.chapitreForms.get('chapitres') as FormArray;
     const chapitreFormGroup = chapitresFormArray.at(chapitreIndex) as FormGroup;
@@ -397,7 +392,7 @@ generateRecommandations(): void {
     return pointsControleFormArray.at(pointIndex) as FormGroup;
   }
 
-//////////////////////////////////// ENREGISTRER L'OPERATION D'AUDIT ///////////////////////////////////////
+//////////////////////////////////// SAVE AUDIT ///////////////////////////////////////
 
     saveAudit(): void {
       const auditData= {
@@ -470,37 +465,6 @@ saveEvaluation(pointId: string): void {
   );
 }
 
- /* 
- 
-addConstat(pointId:string): void {
-  this.addedConstat = this.constatInput;
-  if (this.constatInput.trim()) {
-    //this.addedConstats.push(this.constatInput); // Add the new constat to the array
-    console.log('add constat point id: ',this.pointId)
-   this.constatsMap[pointId].push({ constat: this.constatInput });
-   console.log(`points: ${this.pointId} constats: ${this.constatsMap[pointId]}`)
-    this.constatInput = ''; // Clear the input after adding
-  }
-}
-  
-addConstat(pointId: string): void {
-  this.addedConstat = this.constatInput;
-  if (this.constatInput.trim()) {
-    // Initialize the array for this point if it doesn't exist
-    if (!this.constatsMap[pointId]) {
-      this.constatsMap[pointId] = [];
-    }
-    
-    // Add the constat to the map for the specific point
-    this.constatsMap[pointId].push({ constat: this.constatInput });
-    console.log(`Constats for pointId ${pointId}:`, this.constatsMap[pointId]);
-
-    // Clear input after adding
-    this.constatInput = '';
-  }
-}
-
-*/
 //remove constat before validating it
 
 delConstat():void{
@@ -510,6 +474,8 @@ delConstat():void{
 //delete constat by the manager
 delConstatForever(pointId: string, constat: string) {
   console.log('Attempting to delete constat:', constat, 'for pointId:', pointId); // Debugging line
+
+  if(this.editConstat){
   const pcAudit = this.constatsMap[pointId]?.find(c => c.constat === constat);
   console.log('PC Audit to delete:', pcAudit); // Debugging line
 
@@ -527,9 +493,9 @@ delConstatForever(pointId: string, constat: string) {
   } else {
     console.log('PC Audit not found for deletion'); // Debugging line
   }
-
-  
-  /*this.confirmationService.confirm({
+}
+  else{
+  this.confirmationService.confirm({
     message: 'Voulez-vous supprimer ce constat ?',
     header: 'Confirmer la suppression',
     icon: 'pi pi-info-circle',
@@ -559,27 +525,33 @@ delConstatForever(pointId: string, constat: string) {
     reject: () => {
       console.log('Deletion rejected'); // Debugging line
     }
-  });*/
+  });}
 }
 
 editConstatForever(pointId: string, constat: string){
   this.constatInput = constat;
+  this.prevConstat = constat;
   this.editConstat=true
 }
-EditConstat(pointId:string){
+EditConstat(pointId:string,prevConstat:string){
   this.editedConstat=this.constatInput
+  const pcAudit = this.constatsMap[pointId]?.find(c => c.constat === prevConstat);
+  console.log('PC Audit to edit:', pcAudit); // Debugging line
   console.log('edited constat: ',this.editedConstat)
-  this.auditService.updateConstat(this.pointId,this.editedConstat as unknown as PcAudit).subscribe(
-    response => {
-      
-      console.log(response);
-      this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Constat modifié' });
+  console.log('previous constat: ',prevConstat)
+  this.delConstatForever(pointId,prevConstat)
+  this.addConstat()
+  /*this.auditService.updateConstat(pcAudit.id,this.editedConstat as unknown as PcAudit).subscribe({
+    next: () => {
+      // Successfully deleted constat, and removed from UI
+      this.constatsMap[pointId] = this.constatsMap[pointId].filter(c => c.constat !== prevConstat);
+      console.log('Edited constat successfully'); // Debugging line
     },
-    error => {
-      this.messageService.add({ severity: 'error', summary: 'Error', detail: error });
-      console.log('Error occurred');
+    error: (err) => {
+      console.error('Failed to edit constat:', err);
     }
-  )
+  }
+  )*/
 }
 
 //remove preuve before validating it
@@ -607,9 +579,18 @@ delPreuveForever(pointId: string, preuve: string){
 
 editPreuveForever(pointId: string, preuve: string){
   this.preuveInput = preuve;
+  this.prevPreuve = preuve;
+  this.editPreuve=true
+  
 }
-Editpreuve(){
-
+Editpreuve(pointId:string,prevPreuve:string){
+  this.editedPreuve=this.preuveInput
+  const pcAudit = this.preuvesMap[pointId]?.find(c => c.constat === prevPreuve);
+  console.log('PC Audit to edit:', pcAudit); // Debugging line
+  console.log('edited preuve: ',this.editedPreuve)
+  console.log('previous preuve: ',prevPreuve)
+  this.delPreuveForever(pointId,prevPreuve)
+  this.addpreuve()
 }
 
 addRecommandation(): void {
@@ -617,6 +598,38 @@ addRecommandation(): void {
   if (!this.isValidateButtonClicked || this.normeAdopte?.validation) {
     this.generateRecommandations();
   }
+
+}
+delRecommandationForever(pointId: string, recommandation: string){
+  const pcAudit = this.recomMap[pointId].find((rc: { recommandation: string; }) => rc.recommandation === recommandation);
+
+        if (pcAudit && pcAudit.id) {
+          this.auditService.deleteRecommandation(pcAudit.id).subscribe({
+            next: () => {
+              // Successfully deleted constat, now remove it from UI
+              this.recomMap[pointId] = this.recomMap[pointId].filter((rc: { recommandation: string; }) => rc.recommandation === recommandation);
+            },
+            error: (err) => {
+              console.error('Failed to delete constat:', err);
+            }
+          });
+        }
+   
+}
+editRecommandationForever(pointId:string,recommandation:string){
+  this.recommandationInput = recommandation;
+  this.prevRecommadation = recommandation;
+  this.editRecommadation=true
+}
+Editrecommadation(pointId:string,prevRecommadation:string){
+  this.editedPreuve=this.preuveInput
+  const pcAudit = this.recomMap[pointId]?.find((rc: { constat: string; }) => rc.constat === prevRecommadation);
+  console.log('PC Audit to edit:', pcAudit); // Debugging line
+  console.log('edited preuve: ',this.editedRecommandation)
+  console.log('previous preuve: ',prevRecommadation)
+  this.delRecommandationForever(pointId,prevRecommadation)
+  this.addRecommandation()
+
 }
 validateDetails(): void {
   const pointId = `${this.selectedChapitreIndex}-${this.selectedPointIndex}`;
@@ -625,200 +638,6 @@ validateDetails(): void {
   this.closeModal();
 }
 
-
-/*validateDetails(): void {
-  const pointForm = this.getPointFormGroup(this.selectedChapitreIndex, this.selectedPointIndex);
-
-  // Ensure that pointForm and necessary controls are available
-  if (pointForm) {
-    const pointIdControl = pointForm.get('id');
-    const constatControl = pointForm.get('constat');
-    const preuveControl = pointForm.get('preuve');
-
-    if (pointIdControl && constatControl && preuveControl) {
-      const pointId = pointIdControl.value;
-      
-      // Patch form with added constats and preuves
-      pointForm.patchValue({
-        constat: this.addedConstats.join(', '),
-        preuve: this.addedPreuves.join(', ')
-      });
-
-      console.log('Patched form values:', pointForm.value);
-
-      // Update constatsMap and preuvesMap to ensure they are in sync
-      this.constatsMap[pointId] = [{ constat: constatControl.value }];
-      this.preuvesMap[pointId] = [{ preuve: preuveControl.value }];
-      
-
-      this.closeModal();
-    } else {
-      console.error('One or more controls are missing in the form.');
-    }
-  } else {
-    console.error('Point form is null or undefined.');
-  }
-}
-
-validateDetails(): void {
-  const pointForm = this.getPointFormGroup(this.selectedChapitreIndex, this.selectedPointIndex);
-
-  if (pointForm) {
-    const pointIdControl = pointForm.get('id');
-    const constatControl = pointForm.get('constat');
-    const preuveControl = pointForm.get('preuve');
-
-    if (pointIdControl && constatControl && preuveControl) {
-      const pointId = pointIdControl.value;
-
-      // Patch form with added constats and preuves for the specific control point
-      pointForm.patchValue({
-        constat: this.constatsMap[pointId]?.map(c => c.constat).join(', ') || '',
-        preuve: this.preuvesMap[pointId]?.map(p => p.preuve).join(', ') || ''
-      });
-
-      console.log(`Patched form values for point ${pointId}:`, pointForm.value);
-
-      // Update constatsMap and preuvesMap to ensure they are in sync
-      this.constatsMap[pointId] = [{ constat: constatControl.value }];
-      this.preuvesMap[pointId] = [{ preuve: preuveControl.value }];
-
-      this.closeModal();
-    } else {
-      console.error('Missing controls in the form.');
-    }
-  } else {
-    console.error('Point form is null or undefined.');
-  }
-}validateDetails(): void {
-  const pointForm = this.getPointFormGroup(this.selectedChapitreIndex, this.selectedPointIndex);
-
-  // Ensure that pointForm and necessary controls are available
-  if (pointForm) {
-    const pointIdControl = pointForm.get('id');
-    const nvControl = pointForm.get('niveauMaturite')
-    const constatControl = pointForm.get('constat');
-    const preuveControl = pointForm.get('preuve');
-    this.selectedNiveau=this.niveauInput
-    console.log('selected niveau: ',this.selectedNiveau)
-    if (pointIdControl && constatControl && preuveControl) {
-      const pointId = pointIdControl.value;
-      
-      // Patch form with added constats and preuves
-      pointForm.patchValue({
-        constat: this.addedConstats.join('. '),
-        preuve: this.addedPreuves.join('. ')
-      });
-
-      console.log('Patched form values:', pointForm.value);
-
-      // Update constatsMap and preuvesMap to ensure they are in sync
-      this.constatsMap[pointId] = [{ constat: constatControl.value }];
-      this.preuvesMap[pointId] = [{ preuve: preuveControl.value }];
-      
-      this.savePcAudites()
-      this.closeModal();
-    } else {
-      console.error('One or more controls are missing in the form.');
-    }
-  } else {
-    console.error('Point form is null or undefined.');
-  }
-}
-*/
-
-
-
-/*savePcAudites(): void {
-  //this.validateDetails();
-
-  const changedEvaluations = this.getEvaluations()
-    .filter((evaluation, index) => {
-      // Find corresponding original evaluation if available
-      const originalEval = this.originalEvaluations.find(origEval => origEval.pointControle.id === evaluation.pointControle.id);
-
-      // Check if the evaluation has meaningful fields that are non-empty
-      const hasMeaningfulEvaluation = evaluation.niveauMaturite || evaluation.constat || evaluation.preuve || evaluation.recommandation;
-
-      // Check if the evaluation has changed compared to the original evaluation
-      const isEvaluationChanged = originalEval && (
-        evaluation.niveauMaturite !== originalEval.niveauMaturite ||
-        (evaluation.constat && evaluation.constat !== originalEval.constat) ||
-        (evaluation.preuve && evaluation.preuve !== originalEval.preuve) ||
-        (evaluation.recommandation && evaluation.recommandation !== originalEval.recommandation)
-      );
-
-      // Only include evaluations that are meaningful and have changed
-      return hasMeaningfulEvaluation && (!originalEval || isEvaluationChanged);
-    })
-    .map(evaluation => ({
-      id: UUID.UUID(), // Generating a unique ID for new evaluations
-      pc: evaluation.pointControle,
-      niveau_maturite: evaluation.niveauMaturite,
-      constat: evaluation.constat,
-      preuve: evaluation.preuve,
-      recommandation: evaluation.recommandation,
-      audit: this.audit
-    }));
-
-    if (changedEvaluations.length > 0) {
-      //console.log('Evaluations to be saved:', changedEvaluations);
-      this.auditService.createPcAudites(changedEvaluations as PcAudit[]).subscribe({
-        next: (data) => {
-          this.auditValidationService.setValidationState(true);
-          //console.log('Audit evaluations saved:', data);
-          this.originalEvaluations = this.getEvaluations().filter(evaluation => {
-            return evaluation.niveauMaturite || evaluation.constat || evaluation.preuve;
-          }) || [];
-        },
-        error: (err) => {
-          console.error('Error saving PcAudites:', err);
-        }
-      });
-    } else {
-    console.log("No changes detected, nothing to save.");
-  }
-
-  console.log('Changed evaluations:', changedEvaluations);
-}
-
-savePcAudites(): void {
-  const changedEvaluations = this.getEvaluations()
-    .filter(evaluation => {
-      // Filter only meaningful and changed evaluations
-      const hasMeaningfulEvaluation = evaluation.niveauMaturite || evaluation.constat || evaluation.preuve || evaluation.recommandation;
-      const originalEval = this.originalEvaluations.find(origEval => origEval.pointControle.id === evaluation.pointControle.id);
-      const isEvaluationChanged = originalEval && (
-        evaluation.niveauMaturite !== originalEval.niveauMaturite ||
-        evaluation.constat !== originalEval.constat ||
-        evaluation.preuve !== originalEval.preuve ||
-        evaluation.recommandation !== originalEval.recommandation
-      );
-      return hasMeaningfulEvaluation && (!originalEval || isEvaluationChanged);
-    })
-    .map(evaluation => ({
-      id: UUID.UUID(),
-      pc: evaluation.pointControle,
-      niveau_maturite: evaluation.niveauMaturite,
-      constat: evaluation.constat,
-      preuve: evaluation.preuve,
-      recommandation: evaluation.recommandation,
-      audit: this.audit
-    }));
-
-  if (changedEvaluations.length > 0) {
-    this.auditService.createPcAudites(changedEvaluations as PcAudit[]).subscribe({
-      next: () => {
-        console.log('Successfully saved pc audits.');
-      },
-      error: (err) => {
-        console.error('Error saving pc audits:', err);
-      }
-    });
-  } else {
-    console.log('No changes to save.');
-  }
-}*/
 savePcAudites(): void {
   const changedEvaluations = this.getEvaluations()
     .filter((evaluation, index) => {
@@ -913,12 +732,15 @@ getEvaluations(): any[] {
       const constatsForPoint = this.constatsMap[pointId] || [];
      // console.log('constatsMap for point; ', this.constatsMap)
       // Convert list of constats to a string or handle according to your needs
-      const constatList = constatsForPoint.map(con => con.constat).join(', ');
+      const constatList = constatsForPoint.map(con => `- ${con.constat}`).join('\n');
       //console.log('Constat list:', constatList); 
       //console.log("constats map: ",constatList)
       //preuve list
       const preuveForPoint = this.preuvesMap[pointId] || [];
-      const preuveList = preuveForPoint.map(pv => pv.preuve).join(', ')
+      const preuveList = preuveForPoint.map(pv => pv.preuve).join('\n')
+
+      const recommandationForPoint = this.recomMap[pointId] || [];
+      const recommandationList = recommandationForPoint.map((rc: { recommandation: any; }) => rc.recommandation).join('\n')
 
       const niveauForPoint = this.niveauMap[pointId] || '';
       const niveauVal = niveauForPoint.niveau_maturite
@@ -926,13 +748,13 @@ getEvaluations(): any[] {
         pointControle: {
           id: pointGroup.get('id')?.value,
           designation: pointGroup.get('designation')?.value,
-          chapitreTitre: this.chapitres[chapitreIndex].titre
+          chapitreTitre: this.chapitres && this.chapitres[chapitreIndex] ? this.chapitres[chapitreIndex].titre : 'Unknown'
         },
         niveauMaturite: niveauVal,
         constat: constatList,
         preuve: preuveList,
       
-        recommandation: pointGroup.get('recommandation')?.value
+        recommandation: recommandationList
       };
 
       evaluations.push(evaluation);
@@ -942,7 +764,7 @@ getEvaluations(): any[] {
   return evaluations;
 }
   
-     //////////////////////////////// FONCTION D'EXPORTATION /////////////////////////////////////////////
+     //////////////////////////////// EXPORT REPORTS /////////////////////////////////////////////
 
     exportToExcel(): void {
       const evaluations = this.getEvaluations();
@@ -998,9 +820,22 @@ getEvaluations(): any[] {
     exportReports(){
       this.exportToExcel()
       this.exportToWord()
+      this.auditService.checkDowloadState(this.audit.id).subscribe({
+        next: (response) => {
+          // Update the audit object with the updated control state
+          const updatedAudit = this.audit.downloaded=true;
+  
+          console.log('report downloaded: ', updatedAudit);
+          //this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Audit Verifié !' });
+        },
+        error: (err) => {
+          console.error('Error updating audit control state:', err);
+          //this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Failed to verify audit.' });
+        }
+      })
     }
     
-    /////////////////////////// CONFORMITE PAR CHAPITRE ///////////////////////////////////////
+    /////////////////////////// CONFORMITY BY CHAPTER ///////////////////////////////////////
     getConformite(): void {
       this.showConformite = !this.showConformite; // Bascule l'état de visibilité
     }

@@ -19,41 +19,18 @@
               <td>{{ projet.designation }}</td>
               <td><button pButton pRipple icon="pi pi-users" class="p-button-rounded del-button" (click)="handleAffectation(projet)"></button></td>
               <td><button pButton pRipple icon="pi pi-clipboard" class="audit-btn p-button-info" (click)="showAuditModal(projet)"></button></td>
-              <td><button pButton pRipple icon="pi pi-trash" (click)="handleDeleteProjet(projet)" style="color: white;" class="p-button-secondary p-button-rounded" style="margin-right: 15px;"></button>
+              <td><button pButton pRipple icon="pi pi-trash" (click)="handleDeleteProjet(projet)" style="color: white; border-radius: 55px;" class="p-button-secondary del-pro p-button-rounded" style="margin-right: 15px;"></button>
               <!--button severity="secondary" pButton pRipple icon="pi pi-pencil" class="p-button-info p-button-rounded" (click)="handleEditProjet(projet)"></button--></td>
             </tr>
           </ng-template>
         </p-table>
       </p-card>
-      <!--app-user-update
-       [visible]="visible"
-       [selectedUser]="selectedUser"
-       (clickClose)="onCancel($event)"
-       (clickAdd)="onSave($event)"
-       >
-      </app-user-update-->
-      
+   
       
     
     <p-confirmDialog header="Delete" icon="pi pi-exclamation-triangle"></p-confirmDialog>
     <p-toast position="bottom-right"></p-toast>
-    <!--app-projet-norme
-      [showModal]="showModal"
-    >
-
-    </app-projet-norme-->
-    <!--p-dialog header="Sélectionner Norme Adoptée" [(visible)]="displayAuditModal" [modal]="true" [closable]="false" [style]="{ height: '300px',width:'570px'}">
-      <div class="p-fluid">
-          <div class="p-field">
-              <label for="normeAdopte">Norme Adoptée</label>
-              <p-dropdown [options]="normesAdoptees" [(ngModel)]="selectedNormeAdopte" optionLabel="norme.designation" placeholder="Selectionner la norme.."></p-dropdown>
-          </div>
-          <div class="p-field" style="margin-top: 17px; display: inline-flex;">
-              <button pButton label="Auditer" (click)="redirectToAudit()" style="margin-bottom: 10px;"></button>
-              <button pButton label="Annuler" class="p-button-secondary" (click)="displayAuditModal=false"></button>
-          </div>
-      </div>
-  </p-dialog-->
+   
   <p-dialog header="Sélectionner Norme Adoptée" [modal]="true" [(visible)]="displayAuditModal" [style]="{ height: '200px',width:'570px'}" styleClass="justify-content-center align-items">
    
     <div class="field">
@@ -71,6 +48,7 @@
   <app-affectation
     [showAuditors]="showAuditors"
     [selectedPro]="selectedPro"
+    (clickClose)="cancelAffectation()"
   >
 
   </app-affectation>

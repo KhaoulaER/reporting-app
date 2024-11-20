@@ -17,7 +17,7 @@ import { ToastModule } from 'primeng/toast';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { PanelModule } from 'primeng/panel';
 import { MessageService, SharedModule } from 'primeng/api';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule } from '@angular/common/http';
 import { TableModule } from 'primeng/table';
 import { DialogModule } from 'primeng/dialog';
 import { FileUploadModule } from 'primeng/fileupload';
@@ -89,8 +89,13 @@ import { UnauditedProComponent } from './modules/home-auditor/unaudited-pro/unau
 import { RapportWordComponent } from './modules/rapport/rapport-word/rapport-word.component';
 import { AuditHistoryComponent } from './modules/audit-history/audit-history.component';
 import { AuditHistoryDetailsComponent } from './modules/audit-history/audit-history-details/audit-history-details.component';
-//import { AuthInterceptor } from './core/auth.interceptor';
-//import { AuthInterceptor } from './core/auth.interceptor';
+import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+
+// Required for AOT compilation (Ahead Of Time)
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+}
 
 @NgModule({
   declarations: [
@@ -181,7 +186,14 @@ import { AuditHistoryDetailsComponent } from './modules/audit-history/audit-hist
     AppLayoutModule,
     KeycloakAngularModule,
     ChartModule,
-    SharedModule
+    SharedModule,
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: HttpLoaderFactory,
+        deps: [HttpClient]
+      }
+    })
   ],
   providers: [
     provideClientHydration(),

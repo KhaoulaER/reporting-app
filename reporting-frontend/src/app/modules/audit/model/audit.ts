@@ -8,6 +8,7 @@ export interface Audit{
     auditeur: User
     date_audit: Date;
     control: boolean;
+    downloaded:boolean;//check if repport is downloaded
 }
 export interface PcAudit{
     id: string,

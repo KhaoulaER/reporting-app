@@ -1,0 +1,14 @@
+
+  {
+    "HOME": {
+      "WELCOME": "Bienvenue dans notre application!",
+      "LOGIN": "Connexion",
+      "LOGOUT": "Déconnexion"
+    },
+    "Menu":{
+        "HISTORY": "Historique",
+        "PROJET": "Projet"
+        
+    }
+  }
+  

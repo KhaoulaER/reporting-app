@@ -9,14 +9,20 @@
     (click)="showAddForm = true" 
   ></button>
   <p-fileUpload 
-          mode="basic" 
-          chooseLabel="Charger" 
-          chooseIcon="pi pi-upload"
-          name="file"
-          accept=".xlsx, .xls" 
-          maxFileSize="1000000" 
-        fileSelection="single" 
-          (onSelect)="onSelectFile($event)" />
+  mode="basic" 
+  chooseLabel="Importer" 
+  chooseIcon="pi pi-upload"
+  name="file"
+  accept=".xlsx, .xls" 
+  maxFileSize="1000000" 
+  fileSelection="single" 
+  (onSelect)="onSelectFile($event)"
+  class="custom-file-upload"
+/>
+<p-dialog [(visible)]="loading" modal="true" closable="false" showHeader="false" [style]="{ width: '100px', textAlign: 'center', background: 'transparent', boxShadow: 'none' }"
+[contentStyle]="{ background: 'transparent', border: 'none' }">
+  <i class="pi pi-spin pi-spinner" style="font-size: 2em;"></i><br><span style="color: gray;">En cours..</span>
+</p-dialog>
   <!-- File upload for Excel containing chapters and control points -->
     <!--label for="fileUpload">Importer Fichier Excel</label><br-->
     <!--input 

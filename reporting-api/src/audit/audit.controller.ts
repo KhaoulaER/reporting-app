@@ -101,6 +101,23 @@ create(
     }
   }
 
+  @Groups('/PROJECT_MANAGER','/AUDITOR')
+  @Patch(':id/downloaded')
+  async updateDownloadState(@Param('id') id: string, @Body() UpdateAuditDto:UpdateAuditDto): Promise<any>{
+    try{
+      const updateAudit = await this.auditService.updateDownloadState(id,UpdateAuditDto.downloaded);
+      if (!updateAudit) {
+        throw new NotFoundException(`Audit with id ${id} not found.`);
+      }
+      return {
+        message: 'control state updated successfully.',
+        audit: updateAudit,
+      };
+    }catch (error) {
+      throw new Error(`Failed to update control state: ${error.message}`);
+    }
+  }
+
   @Get('first-auditor/:id')
   findFirstAuditor(@Param('id') id: string): Promise<User | null>{
     return this.auditService.getFirstAuditorForNormeAdopte(id);

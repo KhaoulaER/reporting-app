@@ -9,9 +9,22 @@
             <div *ngIf="designation.errors?.['required']">Ce champs est important!.</div>
         </small>
          
+        <div class="field" >
+            <label for="echel" class="font-semibold">Echelle d'évaluation</label>
+            <p-dropdown 
+                      id="echelDropdown" 
+                      [options]="echels" 
+                      formControlName="echel"
+                      styleClass="flex-auto w-full"
+                      >
+                      <ng-template let-auditeur pTemplate="item">
+                        {{ echel }}
+                    </ng-template>
+                  </p-dropdown> 
+        </div>
     <div class="flex justify-content-center gap-2">
-        <button label="Cancel" pButton severity="secondary" (click)="display = false" ></button>
-        <button label="EDIT" pButton (click)="handleSubmit()" ></button>
+        <button label="Annuler" pButton severity="secondary" (click)="display = false" ></button>
+        <button label="Modifier" pButton (click)="handleSubmit()" ></button>
     </div>
         </div>
   </form>

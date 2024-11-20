@@ -22,6 +22,8 @@ export class ChapitreListComponent implements OnInit{
   
   uploadedFile: File | null = null;
   chaptersAndPoints: any[] = []; // To store chapters and control points
+  loading: boolean = false;
+
 constructor(
   private chapitreService:ChapitreService, 
   private route: ActivatedRoute,
@@ -53,6 +55,7 @@ constructor(
   onSelectFile(event: any) {
     const file = event.files[0]; // Access the first selected file
     if (file) {
+      this.loading = true; // Show loading modal
       this.uploadedFile = file;
       this.readExcelFile(file);
     }
@@ -64,83 +67,62 @@ constructor(
       const data = new Uint8Array(e.target.result);
       const workbook = XLSX.read(data, { type: 'array' });
   
-      // Access the third sheet (index 2)
-      const sheetName = workbook.SheetNames[3];
+      const sheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[sheetName];
   
-      // Convert Excel data to JSON format as an array of arrays
       const excelData: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-  
-      // Extract headers from the first row (cast to string[])
       const headers: string[] = excelData[0] as string[];
-      
-      // Define column indexes dynamically
+  
       const chapitreIndex = headers.indexOf('Chapitre');
       const objectifIndex = headers.indexOf('Objectif');
       const regleIndex = headers.indexOf('Règle');
   
-      // Initialize an object to group control points by chapter
       const chaptersMap: { [key: string]: any } = {};
   
-      let lastChapter = ""; // Variable to keep track of the last valid chapter name
-      let lastObj=""
-      // Loop through the Excel rows starting from the second row (after the header)
+      let lastChapter = "";
+      let lastObj = "";
+  
       for (let i = 3; i < excelData.length; i++) {
-        const row: any[] = excelData[i]; // Cast each row as an array
-        console.log('Row:', row); // Log each row
+        const row: any[] = excelData[i];
+        const chapitre = row[0] || lastChapter;
+        //const objectif = row[1] || lastObj;
+        const regle = row[1];
   
-        // Extract values using column indexes
-        const chapitre = row[0] || lastChapter; // Use last chapter if current is empty
-        const objectif = row[1] || lastObj; // Use empty string if no objectif
-        const regle = row[2];
-  
-        // Skip rows that don't have a control point (rule/regle)
         if (!regle) continue;
   
-        // Update last valid chapter name
         if (chapitre && chapitre !== lastChapter) {
           lastChapter = chapitre;
         }
   
-        // If the chapter already exists in the map, push the new control point
         if (chaptersMap[chapitre]) {
-          if(objectif && objectif !== lastObj){
-            lastObj=objectif
-          }
+          /*if (objectif && objectif !== lastObj) {
+            lastObj = objectif;
+          }*/
           chaptersMap[chapitre].pointsControle.push({
             designation: regle,
-            objectif: objectif,
+           // objectif: objectif,
           });
         } else {
-          // Otherwise, create a new chapter entry
-          if(objectif && objectif !== lastObj){
-            lastObj=objectif
-          }
+         /* if (objectif && objectif !== lastObj) {
+            lastObj = objectif;
+          }*/
           chaptersMap[chapitre] = {
-            
             chapitre: chapitre,
             pointsControle: [
               {
                 designation: regle,
-                objectif: objectif,
+                //objectif: objectif,
               },
             ],
           };
         }
       }
   
-      // Convert the chaptersMap to an array to prepare it for upload
       const chaptersAndPoints = Object.values(chaptersMap);
-      console.log('Chapters and Control Points:', chaptersAndPoints); // Log the structured data
-  
-      // Now send this structured data to the backend
       this.uploadChaptersAndControlPoints(chaptersAndPoints);
     };
     reader.readAsArrayBuffer(file);
   }
-  
-  
-  
   
   // Send chapters and control points to the backend
   uploadChaptersAndControlPoints(data: any) {
@@ -148,29 +130,14 @@ constructor(
       (response) => {
         console.log('Chapters and control points uploaded successfully', response);
         this.loadChapitres(); // Reload chapters after upload
+        this.loading = false; // Hide the loading spinner after success
       },
       (error) => {
         console.error('Error uploading chapters and control points', error);
+        this.loading = false; // Hide the loading spinner on error
       }
     );
   }
-
-  // Read and process the Excel file
- /* readExcelFile(file: File) {
-    const reader = new FileReader();
-    reader.onload = (e: any) => {
-      const data = new Uint8Array(e.target.result);
-      const workbook = XLSX.read(data, { type: 'array' });
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-      this.chaptersAndPoints = XLSX.utils.sheet_to_json(worksheet); // Convert to JSON array
-
-      console.log('Chapters and Points:', this.chaptersAndPoints);
-      // Here you can process the data and prepare it for the database
-    };
-    reader.readAsArrayBuffer(file);
-  }
-*/
 
   loadChapitres(): void {
     this.chapitreService.findAllByNorme(this.normeId).subscribe((data: any[]) => {

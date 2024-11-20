@@ -14,13 +14,15 @@ import { NormeAdopteService } from 'src/projets/norme-adopte/_business/norme-ado
 @Controller('pc-audit')
 @UseGuards(AuthGuard,RolesGuard)
 @UseInterceptors(AuthInterceptor)
+@Groups('/AUDITOR','/PROJECT_MANAGER')
 export class PcAuditController {
   constructor(
     private readonly pcAuditService: PcAuditService, 
     private auditService:AuditService,
     private normeAdopteService:NormeAdopteService) {}
   @Post()
-  @Groups('/AUDITOR','/PROJECT_MANAGER')
+  
+@Groups('/AUDITOR','/PROJECT_MANAGER')
   //@Roles('project-fa8c5d80-0809-45d6-ab92-90c7a46dd97e-read-write')
   async createPcAudites(@Body() createPcAuditeDto: CreatePcAuditDto, @Req() request: Request): Promise<any> {
     
@@ -33,6 +35,7 @@ export class PcAuditController {
     return audit?.norme_projet?.projet?.id; 
   }
 
+  @Groups('/AUDITOR','/PROJECT_MANAGER')
   @Get('constats/:pointId/:normeAdopteId')
   async getConstatsByPoint(
     @Param('pointId') pointId: string,
@@ -41,13 +44,23 @@ export class PcAuditController {
     return this.pcAuditService.findConstatsByPointNORMEAdopte(pointId, normeAdopteId);
   }
   @Get('preuves/:pointId/:normeAdopteId')
+  @Groups('/AUDITOR','/PROJECT_MANAGER')
   async getPreuvesByPoint(
     @Param('pointId') pointId: string,
     @Param('normeAdopteId') normeAdopteId: string,
   ) {
     return this.pcAuditService.findPreuvesByPointNORMEAdopte(pointId, normeAdopteId);
   }
+  @Get('recommandations/:pointId/:normeAdopteId')
+  @Groups('/AUDITOR','/PROJECT_MANAGER')
+  async getRecommandationsByPoint(
+    @Param('pointId') pointId: string,
+    @Param('normeAdopteId') normeAdopteId: string,
+  ) {
+    return this.pcAuditService.findRecommandationsByPointNORMEAdopte(pointId, normeAdopteId);
+  }
   @Get('niveau/:pointId/:normeAdopteId')
+  @Groups('/AUDITOR','/PROJECT_MANAGER')
   async getNiveau(
     @Param('pointId') pointId: string,
     @Param('normeAdopteId') normeAdopteId: string,
@@ -58,6 +71,7 @@ export class PcAuditController {
 
   // Endpoint to get pc_audits by audit ID
   @Get(':auditId/pcs')
+  @Groups('/AUDITOR','/PROJECT_MANAGER')
   async getPcsByAuditId(@Param('auditId') auditId: string): Promise<PcAudit[]> {
     return this.pcAuditService.getPcsByAuditId(auditId);
   }
@@ -73,12 +87,13 @@ export class PcAuditController {
     return this.pcAuditService.findOne(+id);
   }
   @Get(':id/conformite')
+  @Groups('/AUDITOR','/PROJECT_MANAGER')
   async findToTalBYNV(@Param('id') id: string){
     const na= await this.normeAdopteService.findOne(id);
     console.log('norme adopte: ',na)
     console.log('echell: ',na?.norme?.echel,)
     
-    const maturiteLevels=['N/A', 'Aucun','Initial', 'Reproductible', 'Défini', 'Maîtrisé', 'Optimisé'];
+    const maturiteLevels=['Aucun','Initial', 'Reproductible', 'Défini', 'Maîtrisé', 'Optimisé'];
     const confLevels = ['Non_conforme','Partielle','Totale']
     if(na?.norme?.echel === '0->3'){
       return this.pcAuditService.getLatestAuditsByMaturityLevels(id,confLevels);
@@ -94,17 +109,27 @@ export class PcAuditController {
   }
 
   @Patch('update-constat/:id')
+  @Roles('manager')
   async updateConstat(@Param('id') pcAuditId:string, @Body() updatePcAuditDto:UpdatePcAuditDto){
+    console.log('pc audit: ',pcAuditId)
+    console.log('Received update dto:', updatePcAuditDto);  // Should log the received body including 'constat'
     return this.pcAuditService.editConstat(pcAuditId,updatePcAuditDto);
   }
 
 @Patch('delete-constat/:id')
+@Roles('manager')
 async deleteConstat(@Param('id') pcAuditId: string): Promise<void> {
   return this.pcAuditService.deleteConstat(pcAuditId);
 }
 @Patch('delete-preuve/:id')
+@Roles('manager')
 async deletePreuve(@Param('id') pcAuditId: string): Promise<void> {
   return this.pcAuditService.deletePreuve(pcAuditId);
+}
+@Patch('delete-recommandation/:id')
+@Roles('manager')
+async deleteRecommandation(@Param('id') pcAuditId: string): Promise<void> {
+  return this.pcAuditService.deleteRecommandation(pcAuditId);
 }
 
   @Delete(':id')

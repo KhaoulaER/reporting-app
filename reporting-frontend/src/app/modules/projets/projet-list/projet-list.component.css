@@ -1,9 +1,12 @@
 .del-button{
-    background-color: #E4D00A;
-    color: white;
-    border-color: #E4D00A;
+    background-color: #fff;
+    color: #30D5C8;
+    border-color: #30D5C8;
     border-radius: 55px;
 }
 .audit-btn{
+    border-radius: 55px;
+}
+.del-pro{
     border-radius: 55px;
 }

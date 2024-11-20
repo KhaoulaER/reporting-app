@@ -16,6 +16,12 @@ async function bootstrap() {
       if (allowedOrigins.includes(origin)) {
         res.set('Access-Control-Allow-Origin', origin);
       }
+       // Content Security Policy header
+       res.setHeader("Content-Security-Policy", 
+        "default-src 'self'; " +
+        "img-src 'self' data:; " +
+        "connect-src 'self';"
+      );
     }
   });
 

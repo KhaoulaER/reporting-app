@@ -3,7 +3,7 @@ import { CreateAffectationDto } from '../dto/create-affectation.dto';
 import { UpdateAffectationDto } from '../dto/update-affectation.dto'; 
 import { InjectRepository } from '@nestjs/typeorm';
 import { Affectation } from '../entities/affectation.entity';
-import { EntityManager, Repository } from 'typeorm';
+import { EntityManager, In, Not, Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Projet } from 'src/projets/entities/projet.entity';
 import { ConnexionKeycloakService } from 'src/connexion-keycloak.service';
@@ -153,6 +153,22 @@ if (auditorGroup) {
     return await this.affectationRepository.find({where: {projet:{id:projetId}},
       relations: ['auditeur','projet']
     })
+  }
+  //Not affected auditors:
+  async findUnaffectedAuditors(projetId: string): Promise<User[]> {
+    // Fetch all auditors who are affected to this project
+    const affectedAuditors = await this.affectationRepository.find({
+      where: { projet: { id: projetId } },
+      relations: ['auditeur'],
+    });
+  
+    // Get a list of affected auditor IDs
+    const affectedAuditorIds = affectedAuditors.map(a => a.auditeur.id);
+  
+    // Find auditors that are not in the list of affected auditor IDs
+    return await this.userRepository.find({
+      where: { id: Not(In(affectedAuditorIds)) },
+    });
   }
   findAll() {
     return `This action returns all affectation`;

@@ -78,6 +78,7 @@ export class AuditHeadComponent implements OnInit {
   }
 
   exportToExcel(data: any[]): void {
+    
     const worksheet = XLSX.utils.json_to_sheet(data);
     const workbook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });

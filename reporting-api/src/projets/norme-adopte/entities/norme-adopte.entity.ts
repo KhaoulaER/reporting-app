@@ -11,7 +11,7 @@ export class NormeAdopte {
     @ManyToOne(()=>Norme, {cascade: true, onDelete: 'CASCADE'})
     @JoinColumn()
     norme: Norme;
-    @ManyToOne(() => Projet, (projet) => projet.normeAdopte)
+    @ManyToOne(() => Projet, (projet) => projet.normeAdopte, {cascade: true, onDelete: 'CASCADE'})
     projet: Projet;
     @Column({ default: 0 })
     evaluation: number;

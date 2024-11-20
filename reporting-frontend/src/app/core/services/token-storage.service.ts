@@ -27,17 +27,23 @@ export class TokenStorageService {
   }
 
   public getToken(): string | null {
-    return localStorage.getItem(TOKEN_KEY);
-  }
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem(TOKEN_KEY);
+    }
+    return null;  }
 
   public saveRefreshToken(token: string): void {
-    localStorage.removeItem(REFRESHTOKEN_KEY);
-    localStorage.setItem(REFRESHTOKEN_KEY, token);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(REFRESHTOKEN_KEY);
+      localStorage.setItem(REFRESHTOKEN_KEY, token);
+    }
   }
 
   public getRefreshToken(): string | null {
-    return localStorage.getItem(REFRESHTOKEN_KEY);
-  }
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem(REFRESHTOKEN_KEY);
+    }
+    return null;  }
 
   public saveRequiredAction(
     execution: string,

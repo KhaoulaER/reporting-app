@@ -24,6 +24,10 @@ export class AffecationService {
     return this.http.get<User[]>(`${this.baseUrl}/users/${group}`)
   }
 
+  findNotAffected(projetId:string): Observable<User[]>{
+    return this.http.get<User[]>(`${this.baseUrl}/affectation/not-affected/${projetId}`)
+  }
+
   //NOUVELLE AFFECTATION
   createAffectation(affectation:Affectation){
    affectation.id = UUID.UUID();

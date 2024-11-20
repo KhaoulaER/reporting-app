@@ -22,13 +22,13 @@ export class AuditValidationComponent {
     this.auditValidationService.updateValidateButtonState(true);
     this.validateButtonClick.emit();
     this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Audit Validé !' });
-    window.location.reload();
+    //window.location.reload();
   }
   onOpenAudit(): void{
     this.auditValidationService.updateValidateButtonState(false);
     this.auditButtonClick.emit();
     this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Audit Réinitialisé !' });
-    window.location.reload();
+    //window.location.reload();
   }
   }
    

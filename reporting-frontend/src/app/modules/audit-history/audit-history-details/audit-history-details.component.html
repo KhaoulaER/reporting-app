@@ -14,6 +14,8 @@
         <label for="">Norme: </label><input type="text" class="form-control" value="{{selectedAudit?.norme_projet?.norme?.designation}}" style="width: 220px;" disabled>
     
     </div>
+    <p *ngIf="selectedAudit?.downloaded===true" style="color: lightgreen;">Rapport téléchargé</p>
+
     </div>
     </p-card>
     <p-table [value]="pcAudits" [paginator]="true" [rows]="5" [responsiveLayout]="'scroll'">

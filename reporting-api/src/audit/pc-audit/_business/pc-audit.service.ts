@@ -8,6 +8,7 @@ import { Audit } from 'src/audit/entities/audit.entity';
 import { Preuve } from 'src/normes/chapitres/points-controle/preuves/entities/preuve.entity';
 import { NormeAdopte } from 'src/projets/norme-adopte/entities/norme-adopte.entity';
 import { NormeAdopteService } from 'src/projets/norme-adopte/_business/norme-adopte.service';
+import { PcAuditHistory } from '../entities/pc-audit-history';
 
 @Injectable()
 export class PcAuditService {
@@ -15,6 +16,7 @@ export class PcAuditService {
     @InjectRepository(PcAudit) private pcAuditRepository:Repository<PcAudit>,
     @InjectRepository(Audit) private auditRepository: Repository<Audit>,
     @InjectRepository(Preuve) private preuveRepository: Repository<Preuve>,
+    @InjectRepository(PcAuditHistory) private pcAuditHistoryRepository: Repository<PcAuditHistory>,
     private normeAdopteService: NormeAdopteService,
     private readonly entityManager: EntityManager
   ){}
@@ -38,6 +40,35 @@ export class PcAuditService {
 
   /////////// CREATION PCA AVEC PREUVES /////////////////////////
   async create(createPcAuditDto: CreatePcAuditDto): Promise<PcAudit> {
+    // Start a transaction
+    return await this.pcAuditRepository.manager.transaction(async (transactionalEntityManager) => {
+      // Step 1: Create and save PcAudit
+      const pcAudit = new PcAudit();
+      pcAudit.pc = createPcAuditDto.pc;
+      pcAudit.niveau_maturite = createPcAuditDto.niveau_maturite;
+      pcAudit.constat = createPcAuditDto.constat;
+      pcAudit.preuve = createPcAuditDto.preuve;
+      pcAudit.recommandation = createPcAuditDto.recommandation;
+      pcAudit.audit = createPcAuditDto.audit;
+
+      const savedPcAudit = await transactionalEntityManager.save(pcAudit);
+
+      // Step 2: Create and save PcAuditHistory with the same data
+      const pcAuditHistory = new PcAuditHistory();
+      pcAuditHistory.pc = savedPcAudit.pc;
+      pcAuditHistory.niveau_maturite = savedPcAudit.niveau_maturite;
+      pcAuditHistory.constat = savedPcAudit.constat;
+      pcAuditHistory.preuve = savedPcAudit.preuve;
+      pcAuditHistory.recommandation = savedPcAudit.recommandation;
+      pcAuditHistory.audit = savedPcAudit.audit;
+
+      await transactionalEntityManager.save(pcAuditHistory);
+
+      // Return the created PcAudit
+      return savedPcAudit;
+    });
+  }
+  /*async create(createPcAuditDto: CreatePcAuditDto): Promise<PcAudit> {
     //const pcAudits = [];
 
         const pcAudit = new PcAudit();
@@ -50,6 +81,19 @@ export class PcAuditService {
 
     return this.pcAuditRepository.save(pcAudit);
   }
+  async createHistory(createPcAuditDto: CreatePcAuditDto): Promise<PcAudit> {
+    //const pcAudits = [];
+
+        const pcAudit = new PcAudit();
+        pcAudit.pc = createPcAuditDto.pc;
+        pcAudit.niveau_maturite = createPcAuditDto.niveau_maturite;
+        pcAudit.constat = createPcAuditDto.constat;
+        pcAudit.preuve = createPcAuditDto.preuve;
+        pcAudit.recommandation=createPcAuditDto.recommandation
+        pcAudit.audit = createPcAuditDto.audit;
+
+    return this.pcAuditHistoryRepository.save(pcAudit);
+  }*/
 
   /////Dernier PCA pour une norme adopte
   async findLatestEvaluationsByNorme(normeAdopId: string): Promise<PcAudit[]> {
@@ -91,11 +135,11 @@ export class PcAuditService {
     // Initialize the structure for results
     const results = chapitres.map(chapitre => ({
       chapitre: chapitre.titre,
-      nombre_pc_audit: 0,
+      nombre_pc_audit: 0, //Number of evaluated control points for a chapter
       conformite: 0,
       result: maturiteLevels.map(niveau => ({
         niveau_maturite: niveau,
-        nb_pc_audit: 0
+        nb_pc_audit: 0 //Number of  control points evaluated by this maturity level for a chapter
       }))
     }));
   
@@ -148,13 +192,13 @@ export class PcAuditService {
           // Switch for echel 0->3
           switch (maturiteResult.niveau_maturite) {
             case 'Non_conforme':
-              totalConformite += maturiteResult.nb_pc_audit * 0;
+              totalConformite = maturiteResult.nb_pc_audit * 0;
               break;
             case 'Partielle':
-              totalConformite += maturiteResult.nb_pc_audit * 0.5;
+              totalConformite = maturiteResult.nb_pc_audit * 0.5;
               break;
             case 'Totale':
-              totalConformite += maturiteResult.nb_pc_audit * 1;
+              totalConformite = maturiteResult.nb_pc_audit * 1;
               break;
           }
         }
@@ -223,6 +267,23 @@ export class PcAuditService {
       .addOrderBy('audit.date_audit', 'ASC') // Then, order by date_audit
       .getMany();
   }
+  // Method to find all recoms by a control point and normeAdopte
+  async findRecommandationsByPointNORMEAdopte(pointId: string, normeAdopteId: string): Promise<any[]> {
+    return this.pcAuditRepository
+      .createQueryBuilder('pc_audit')
+      .leftJoinAndSelect('pc_audit.audit', 'audit')
+      .leftJoinAndSelect('audit.norme_projet', 'norme_adopte')
+      .where('pc_audit.pc.id = :pointId', { pointId })
+      .andWhere('norme_adopte.id = :normeAdopteId', { normeAdopteId })
+      .andWhere('pc_audit.recommandation != :empty', { empty: '' })
+      .distinctOn(['pc_audit.recommandation']) // Use distinctOn to remove duplicates based on constat
+      .select(['pc_audit.recommandation']) // Select distinct constats
+      .addSelect(['pc_audit.id'])
+      .addSelect('audit.date_audit') // Add date_audit for ordering
+      .orderBy('pc_audit.recommandation') // First, order by constat to satisfy distinctOn
+      .addOrderBy('audit.date_audit', 'ASC') // Then, order by date_audit
+      .getMany();
+  }
   // Method to find all constats by a control point and normeAdopte
   async findNiveauByPointNORMEAdopte(pointId: string, normeAdopteId: string): Promise<any> {
     return this.pcAuditRepository
@@ -248,7 +309,7 @@ export class PcAuditService {
 
   async update(id: string, updatePcAuditDto: UpdatePcAuditDto) {
     const pc_audit = await this.pcAuditRepository.findOneBy({id});
-    pc_audit.recommandation=updatePcAuditDto.recommendations;
+    pc_audit.recommandation=updatePcAuditDto.recommandation;
     return this.entityManager.save(pc_audit);
   }
 
@@ -258,7 +319,8 @@ export class PcAuditService {
 
   async deleteConstat(pcAuditId: string): Promise<void> {
     const pcAudit = await this.pcAuditRepository.findOne({ where: { id: pcAuditId } });
-    
+    console.log('pc audit for cnstat del:',pcAudit)
+
     if (pcAudit) {
       pcAudit.constat = null; // Update constat to null to effectively remove it
       await this.pcAuditRepository.save(pcAudit);
@@ -266,17 +328,32 @@ export class PcAuditService {
       throw new NotFoundException(`PcAudit with ID ${pcAuditId} not found`);
     }
   }
-  
-  async editConstat(pcAuditId: string,updatePcAuditDto:UpdatePcAuditDto): Promise<void> {
+
+  async deleteRecommandation(pcAuditId: string): Promise<void> {
     const pcAudit = await this.pcAuditRepository.findOne({ where: { id: pcAuditId } });
-    
+    console.log('pc audit for cnstat del:',pcAudit)
+
     if (pcAudit) {
-      pcAudit.constat = updatePcAuditDto.constat; // Update constat to null to effectively remove it
+      pcAudit.recommandation = null; // Update constat to null to effectively remove it
       await this.pcAuditRepository.save(pcAudit);
     } else {
       throw new NotFoundException(`PcAudit with ID ${pcAuditId} not found`);
     }
   }
+  
+  async editConstat(pcAuditId: string, updatePcAuditDto: UpdatePcAuditDto) {
+    const pcAudit = await this.pcAuditRepository.findOne({ where: { id: pcAuditId } });
+    console.log('pc audit for cnstat:',pcAudit)
+    console.log('update constat dto: ',updatePcAuditDto.constat)
+      // Update constat field
+      if (pcAudit) {
+      pcAudit.constat = updatePcAuditDto.constat;
+      await this.pcAuditRepository.save(pcAudit);
+    } else {
+      throw new NotFoundException(`PcAudit with ID ${pcAuditId} not found`);
+    }
+  }
+  
   
 
   async deletePreuve(pcAuditId: string): Promise<void> {
@@ -292,7 +369,7 @@ export class PcAuditService {
 
   // Method to get all pc_audits for a given audit ID
   async getPcsByAuditId(auditId: string): Promise<any[]> {
-    return this.pcAuditRepository.find({
+    return this.pcAuditHistoryRepository.find({
       where: { audit: { id: auditId } },
       relations: ['pc', 'pc.chapitre','audit','audit.norme_projet','audit.norme_projet.norme','audit.norme_projet.projet','audit.norme_projet.projet.client'], // Including PointsControle and Chapitre
     });

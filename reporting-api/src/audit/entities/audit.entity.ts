@@ -11,6 +11,8 @@ export class Audit {
     date_audit: Date
     @Column({default: false})
     control: boolean
+    @Column({default: false})
+    downloaded: boolean
     @ManyToOne(()=>User, {cascade: true, onDelete: 'CASCADE'})
     @JoinColumn()
     auditeur: User;

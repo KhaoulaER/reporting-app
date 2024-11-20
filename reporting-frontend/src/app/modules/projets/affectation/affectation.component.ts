@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Affectation, Projet } from '../model/projet';
 import { AffecationService } from './affecation.service';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -13,6 +13,8 @@ export class AffectationComponent implements OnChanges, OnInit{
   affectations!: Affectation[];
   @Input() showAuditors:boolean=true;
   @Input() selectedPro!:Projet;
+
+  @Output() clickClose:EventEmitter<boolean> = new EventEmitter<boolean>()
   //NOUVELLE AFFECTATION
   showAddForm:boolean=false
   droits:string[]=['read-only','read-write']
@@ -82,10 +84,16 @@ handleEditAffectation(affectation: Affectation) {
   );
 }
 
+onDialogHide(): void {
+  this.showAuditors = false;
+  this.clickClose.emit(true);
+}
+
   addAffectation(newAffectation: any):void{
     this.affectations.unshift(newAffectation);
   }
-  onCancel(isClosed:boolean){
-    this.showAddForm=!isClosed
+  onCancel(){
+    //this.showAuditors=false
+    this.clickClose.emit(true);
   }
 }

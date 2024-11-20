@@ -52,6 +52,7 @@ export class NormeListComponent implements OnInit{
 
   saveNorm(newData:any){
     this.normes.unshift(newData);
+    this.loadNorms();
   }
 
   updateNorm(newData: any){

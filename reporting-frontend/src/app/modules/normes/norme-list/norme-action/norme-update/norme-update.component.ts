@@ -12,7 +12,7 @@ import { Norme } from '../../../model/norme';
 export class NormeUpdateComponent implements OnChanges{
   @Input() display: boolean = true;
   @Input() selectedNorm: any = null;
-
+  echels: string[] = ['0->3','0->5']
   @Output() clickCloseMod: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() clickAddMod: EventEmitter<any> = new EventEmitter<any>();
   constructor(private fb: FormBuilder,
@@ -28,7 +28,8 @@ export class NormeUpdateComponent implements OnChanges{
   }
 
   updateForm = this.fb.group({
-    designation: ['',[Validators.required]]
+    designation: ['',[Validators.required]],
+    echel: ['',[Validators.required]]
   });
 
   closeModal(){
@@ -54,6 +55,9 @@ export class NormeUpdateComponent implements OnChanges{
 
   get designation(){
     return this.updateForm.controls['designation'];
+  }
+  get echel(){
+    return this.updateForm.controls['echel'];
   }
 
 

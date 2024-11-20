@@ -9,7 +9,7 @@ export class PointsControle {
     id:string;
     @Column()
     designation:string;
-    @Column()
+    @Column({nullable:true})
     objectif:string
     @ManyToOne(()=>Chapitre, {cascade: true, onDelete: 'CASCADE'})
     @JoinColumn()

@@ -1,0 +1,5 @@
+.layout-menu li:hover, 
+.layout-menu li:hover a, /* if links are involved */
+.layout-menu .menu-separator:hover span {
+    color: yellow;
+}

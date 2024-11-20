@@ -91,6 +91,20 @@ export class AuditService {
     }
   }
   
+  async updateDownloadState(id:string, downloaded:boolean):Promise<Audit | undefined>{
+    try{
+      const currentAudit = await this.auditRepository.findOne({where:{id:id}});
+      if (!currentAudit) {
+        throw new Error(`Audit with id ${id} not found.`);
+      }
+
+      currentAudit.downloaded = downloaded;
+      const updatedAudit = await this.auditRepository.save(currentAudit);
+      return updatedAudit;
+    }catch (error) {
+      throw new Error(`Failed to update Audit control state: ${error.message}`);
+    }
+  }
 
   findAll() {
     return this.auditRepository.find();
@@ -132,7 +146,7 @@ export class AuditService {
         .leftJoinAndSelect('audit.pc_audit', 'pcAudit') // Join PcAudit entity
         .where('user.keycloakId = :managerKeycloakId', { managerKeycloakId })
         .andWhere('audit.control = :control', { control: false })
-        .andWhere('normeAdopte.validation = :validation', { validation: false })
+       // .andWhere('normeAdopte.validation = :validation', { validation: false })
         .andWhere('pcAudit.constat IS NOT NULL') // Add condition for constat being not null
         .getCount();
 }
@@ -150,6 +164,7 @@ async getAuditsWithControlFalse(managerId: string) {
     .leftJoinAndSelect('audit.pc_audit', 'pcAudit') // Join PcAudit entity
     .where('projectManager.keycloakId = :managerId', { managerId })
     .andWhere('audit.control = :control', { control: false })
+    ///.andWhere('normeAdopte.validation = :validation', { validation: false })
     .andWhere(
       new Brackets(qb => {
         qb.where('pcAudit.constat IS NOT NULL')
@@ -171,12 +186,13 @@ async getAuditHistory(managerId: string) {
     .leftJoinAndSelect('audit.auditeur', 'auditeur') // Include related auditeur entity
     .leftJoinAndSelect('audit.pc_audit', 'pcAudit') // Join PcAudit entity
     .where('projectManager.keycloakId = :managerId', { managerId })
-    .andWhere(
+    /*.andWhere(
       new Brackets(qb => {
         qb.where('pcAudit.constat IS NOT NULL')
           .orWhere('pcAudit.preuve IS NOT NULL');
       })
-    ) // Add condition where constat OR preuve is not null
+    )*/ // Add condition where constat OR preuve is not null
+    .orderBy('audit.date_audit', 'DESC')
     .getMany();
 }
 

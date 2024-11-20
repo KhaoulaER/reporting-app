@@ -3,7 +3,7 @@
           
       <h3 class="ml-3 mt-0">Liste des normes</h3>
        
-      <p-table class="p-table" [value]="affectations" [paginator]="true" [rows]="5">
+      <p-table class="p-table" [style]="" [value]="affectations" [paginator]="true" [rows]="5">
           <ng-template pTemplate="header">
             <tr>
               <th>Projet</th>
@@ -19,7 +19,8 @@
                   [options]="affectation.projet.normeAdopte" 
                   optionLabel="norme.designation"
                   [(ngModel)]="affectation.projet.selectedNormeAdopte"
-                  placeholder="Choisir une norme">
+                  placeholder="Choisir une norme"
+                  appendTo="body">
                 </p-dropdown>
               </td>
               <td>

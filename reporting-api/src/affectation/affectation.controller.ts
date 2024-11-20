@@ -36,6 +36,11 @@ export class AffectationController {
   findByProjet(@Param('projetId') projetId:string){
     return this.affectationService.findByProjet(projetId);
   }
+
+  @Get('not-affected/:projetId')
+  findNotAffectedByPro(@Param('projetId') projetId:string){
+    return this.affectationService.UnauditedProjectsForAuditor(projetId);
+  }
   @Get('/pnaffectaion/:auditeurId')
   @Groups('/AUDITOR')
   findByAuditeur(@Param('auditeurId') auditeurId:string){
@@ -47,6 +52,7 @@ export class AffectationController {
   }
 
   @Patch(':id')
+  @Groups('/PROJECT_MANAGER')
   update(@Param('id') id: string, @Body() updateAffectationDto: UpdateAffectationDto) {
     return this.affectationService.update(id,updateAffectationDto);
   }

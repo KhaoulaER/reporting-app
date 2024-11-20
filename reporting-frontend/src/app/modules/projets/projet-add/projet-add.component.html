@@ -1,4 +1,4 @@
-<p-dialog header="Nouveau projet" [modal]="true" [(visible)]="visible" [style]="{ height: '400px',width:'570px'}" styleClass="justify-content-center align-items">
+<p-dialog header="Nouveau projet" [modal]="true" [(visible)]="visible" [style]="{ height: '400px',width:'570px'}" styleClass="justify-content-center align-items" (onHide)="onDialogHide()">
     <!-- src/app/projet-add/projet-add.component.html -->
 <form [formGroup]="projetForm" (ngSubmit)="onSubmit()">
   <div style="display: inline-flex; margin-top: 40px;">

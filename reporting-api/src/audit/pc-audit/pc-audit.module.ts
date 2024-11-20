@@ -9,9 +9,10 @@ import { PreuveVerifieModule } from './preuve_verifie/preuve_verifie.module';
 import { Preuve } from 'src/normes/chapitres/points-controle/preuves/entities/preuve.entity';
 import { AuditModule } from '../audit.module';
 import { NormeAdopteModule } from 'src/projets/norme-adopte/norme-adopte.module';
+import { PcAuditHistory } from './entities/pc-audit-history';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([PcAudit,Audit,Preuve]), PcAuditModule, PreuveVerifieModule, NormeAdopteModule,
+  imports: [TypeOrmModule.forFeature([PcAudit,Audit,Preuve, PcAuditHistory]), PcAuditModule, PreuveVerifieModule, NormeAdopteModule,
   forwardRef(() => AuditModule)],
   controllers: [PcAuditController],
   exports: [PcAuditService],

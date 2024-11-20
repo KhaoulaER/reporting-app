@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import PizZip from 'pizzip';
 import Docxtemplater from 'docxtemplater';
+import XmlTemplater from 'docxtemplater';
 import { saveAs } from 'file-saver';
 import { HttpClient } from '@angular/common/http';
 import { NormeAdopte } from '../../projets/model/projet';
@@ -21,6 +22,9 @@ export class RapportWordService {
   constructor(private http:HttpClient) { }
   generateWordReport(evaluations: any[], dataConformite: any, niveau: any, fileName: string, normeAdopte: any, auditeur:any,manager:any): void {
     (window as any).Buffer = Buffer;
+    //CONFORMity col display?
+    const showConformite = normeAdopte?.norme?.echel !== '0->3';
+
     // Fetch the Word template from assets
     this.http.get('/assets/templates/Rapport_Audit.docx', { responseType: 'arraybuffer' }).subscribe(
       async (content: ArrayBuffer) => {
@@ -42,14 +46,6 @@ export class RapportWordService {
         });
 
         // Extract unique chapters from evaluations
-        /*const chapters = evaluations
-          .map((evaluation) => ({
-            title: evaluation.chapitre,
-          }))
-          .filter((value, index, self) => self.findIndex(chap => chap.title === value.title) === index); // Remove duplicates
-
-        // Sort chapters alphabetically by title
-        chapters.sort((a, b) => a.title.localeCompare(b.title));*/
 
         // Extract unique chapters from evaluations
         const chapters = evaluations
@@ -134,26 +130,75 @@ export class RapportWordService {
 const groupedChapters = evaluations.reduce((acc, evaluation) => {
   const chapter = acc.find((c: { title: any; }) => c.title === evaluation.chapitre);
   const conformityStatus = this.getConformityStatus(evaluation.niveau_maturite); // Define conformity based on maturity
+// Split recommendation into three parts
+const recommendations = this.splitRecommendations(evaluation.recommandation);
+//console.log('recomms: ',evaluation.recommandation)
+
+if(normeAdopte?.norme?.echel != '0->3'){
   if (chapter) {
     chapter.controlPoints.push({
       detail: evaluation.regles,
-      constats: evaluation.constat,
+      constats: this.formatWithLineBreaks(evaluation.constat),
       maturite: evaluation.niveau_maturite || 'N/A',
-      conformite: this.getConformityStatus(evaluation.niveau_maturite)
+      conformite: this.getConformityStatus(evaluation.niveau_maturite),
+      recommandations:[{
+        courtTerme: this.formatWithLineBreaks(recommendations.courtTerme),
+        moyenTerme: this.formatWithLineBreaks(recommendations.moyenTerme),
+        longTerme: this.formatWithLineBreaks(recommendations.longTerme),
+        }
+      ]
     });
   } else {
     acc.push({
       title: evaluation.chapitre,
       controlPoints: [{
         detail: evaluation.regles,
-        constats: evaluation.constat,
+        constats: this.formatWithLineBreaks(evaluation.constat),
         maturite: evaluation.niveau_maturite || 'N/A',
-        conformite: this.getConformityStatus(evaluation.niveau_maturite)
+        conformite: this.getConformityStatus(evaluation.niveau_maturite),
+        recommandations:[{
+        courtTerme: this.formatWithLineBreaks(recommendations.courtTerme),
+        moyenTerme: this.formatWithLineBreaks(recommendations.moyenTerme),
+        longTerme: this.formatWithLineBreaks(recommendations.longTerme)
+        }
+      ]
       }]
     });
+  }}
+  else{
+    if (chapter) {
+      chapter.controlPoints.push({
+        detail: evaluation.regles,
+        constats: this.formatWithLineBreaks(evaluation.constat),
+        maturite: evaluation.niveau_maturite || 'N/A',
+        recommandations:[{
+          courtTerme: this.formatWithLineBreaks(recommendations.courtTerme),
+          moyenTerme: this.formatWithLineBreaks(recommendations.moyenTerme),
+          longTerme: this.formatWithLineBreaks(recommendations.longTerme),
+          }
+        ]
+      });
+    } else {
+      acc.push({
+        title: evaluation.chapitre,
+        controlPoints: [{
+          detail: evaluation.regles,
+          constats: this.formatWithLineBreaks(evaluation.constat),
+          maturite: evaluation.niveau_maturite || 'N/A',
+          recommandations:[{
+          courtTerme: this.formatWithLineBreaks(recommendations.courtTerme),
+          moyenTerme: this.formatWithLineBreaks(recommendations.moyenTerme),
+          longTerme: this.formatWithLineBreaks(recommendations.longTerme),
+          }
+        ]
+        }]
+      });
+    }
   }
   return acc;
 }, []);
+
+
 
 
 // Assign numbers based on sorted order
@@ -185,7 +230,8 @@ console.log('Grouped Control Point Tables:', controlPointTables);
       conformite: conformityTable,
       chapitres: numberedChapters,
       chartImage: radarChartImage, // Add the chart image to the placeholders
-      CONTROLPOINTTABLES: controlPointTables
+      CONTROLPOINTTABLES: controlPointTables,
+      showConformite:showConformite // Add this to the data
     });
 
     try {
@@ -221,67 +267,42 @@ console.log('Grouped Control Point Tables:', controlPointTables);
         return 'N/A';  // Default black
     }
   }
-  
- /* async generateWordReport(dataAudit: any[], dataConformite: any[], niveauMaturite: string[], p0: string, normeAdopte: NormeAdopte) {
-    const templateUrl = '../../assets/templates/Rapport_Audit.docx';  // Path to your Word template
 
-    try {
-        // Fetch the Word template
-        const template = await this.http.get(templateUrl, { responseType: 'arraybuffer' }).toPromise();
+splitRecommendations(recommandations: string) {
+  const sections = {
+    courtTerme: '',
+    moyenTerme: '',
+    longTerme: ''
+  };
 
-        // Check if template is defined
-        if (!template) {
-            throw new Error('Failed to load the Word template.');
-        }
+  const courtTermeIndex = recommandations.indexOf('### Court terme');
+  const moyenTermeIndex = recommandations.indexOf('### Moyen terme');
+  const longTermeIndex = recommandations.indexOf('### Long terme');
 
-        // Load the template into Docxtemplater
-        const zip = new PizZip(template);
-        const doc = new Docxtemplater(zip, {
-            paragraphLoop: true,
-            linebreaks: true,
-        });
+  if (courtTermeIndex !== -1) {
+    sections.courtTerme = this.formatRecommendations(recommandations.slice(courtTermeIndex + 15, moyenTermeIndex !== -1 ? moyenTermeIndex : recommandations.length).trim());
+  }
 
-        // Define the data to inject into the template
-        const data = {
-            audits: dataAudit,
-            client: 'ONCF',
-            norme: 'ISO',
-            chef: normeAdopte.projet.manager?.firstName,
-            conformites: dataConformite,
-            niveaux: niveauMaturite,
-            normeAdopte:normeAdopte  // Adjust the structure as needed
-        };
+  if (moyenTermeIndex !== -1) {
+    sections.moyenTerme = this.formatRecommendations(recommandations.slice(moyenTermeIndex + 16, longTermeIndex !== -1 ? longTermeIndex : recommandations.length).trim());
+  }
 
-        // Set the data in the template
-        doc.setData(
-        {
-            audits: dataAudit,
-            client: 'ONCF',
-            norme: 'ISO',
-            chef: normeAdopte.projet.manager?.firstName,
-            conformites: dataConformite,
-            niveaux: niveauMaturite,
-            normeAdopte:normeAdopte  // Adjust the structure as needed
-        }
-        );
+  if (longTermeIndex !== -1) {
+    sections.longTerme = this.formatRecommendations(recommandations.slice(longTermeIndex + 14).trim());
+  }
 
-        try {
-            doc.render();  // Apply the data to the template
-        } catch (error) {
-            console.error('Error rendering the document:', error);
-            throw error;
-        }
+  return sections;
+}
 
-        // Generate the output as a Blob and trigger download
-        const out = doc.getZip().generate({
-            type: 'blob',
-            mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        });
-
-        saveAs(out, 'Audit_Report.docx');
-    } catch (error) {
-        console.error('Error generating the Word report:', error);
-    }
-}*/
-
+formatRecommendations(recommendations: string): string {
+  // Split the recommendations into lines, filter out empty lines,
+  // and format each line as a bullet point
+  return recommendations.split('\n')
+    .filter(line => line.trim()) // Remove empty lines
+    .map(line => `\r\n ${line.trim()}`) // Prepend bullet
+    .join('\r\n'); // Join with Windows-style line breaks
+}
+formatWithLineBreaks(text: string): string {
+  return text.replace('-',`\n`) // Utilise la syntaxe Word pour un saut de ligne
+}
 }

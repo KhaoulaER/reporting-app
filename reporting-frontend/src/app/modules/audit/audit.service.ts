@@ -24,24 +24,6 @@ export class AuditService {
     }
   
 
- /* createAudit(auditData: any, auditeurId:string, normeId:string): Observable<any> {
-    return this.http.post(`${this.baseUrl}/audit/${normeId}`, auditData);
-  }
-*/
-  /*createAudit(normeId: string, auditeurId: string,auditData: any  ): Observable<Audit> {
-    const url = `${this.baseUrl}/audit/${normeId}`;
-    console.log('auditeur from service: ', auditeurId)
-
-    return this.http.post<Audit>(url, {
-      id: UUID.UUID(),normeAdopte: normeId,auditeur: auditeurId,...auditData 
-    });
-  }*/
-  /*createAudit(normeId:string,audit:Audit):Observable<Audit>{
-    audit.id=UUID.UUID();
-    return this.http.post<Audit>(`${this.baseUrl}/audit/${normeId}`, {
-      ...audit });
-  }*/
-
       createAudit(normeId: string, audit: Audit): Observable<Audit> {
         audit.id = UUID.UUID();  // Assuming you generate audit IDs in the frontend
         return this.http.post<Audit>(`${this.baseUrl}/audit/${normeId}`, audit);
@@ -65,6 +47,9 @@ export class AuditService {
     findPreuvesForPoint(pointId:string,normeAdopteId:string): Observable<any[]>{
       return this.http.get<any[]>(`${this.baseUrl}/pc-audit/preuves/${pointId}/${normeAdopteId}`)
     }
+    findRecommandationForPoint(pointId:string,normeAdopteId:string): Observable<any[]>{
+      return this.http.get<any[]>(`${this.baseUrl}/pc-audit/recommandations/${pointId}/${normeAdopteId}`)
+    }
     findNiveau(pointId:string,normeAdopteId:string): Observable<any>{
       return this.http.get<any>(`${this.baseUrl}/pc-audit/niveau/${pointId}/${normeAdopteId}`)
     }
@@ -83,14 +68,22 @@ export class AuditService {
       return this.http.patch(`${this.baseUrl}/pc-audit/delete-constat/${pcAuditId}`,null)
     }
     updateConstat(pcAuditId:string,newConstat:any){
-      return this.http.patch(`${this.baseUrl}/pc-audit/update-constat/${pcAuditId}`,newConstat)
+      console.log('constat in front service: ', newConstat)
+      return this.http.patch(`${this.baseUrl}/pc-audit/update-constat/${pcAuditId}`,{constat:newConstat})
     }
     deletePreuve(pcAuditId:string){
       return this.http.patch(`${this.baseUrl}/pc-audit/delete-preuve/${pcAuditId}`,null)
     }
+    deleteRecommandation(pcAuditId:string){
+      return this.http.patch(`${this.baseUrl}/pc-audit/delete-recommandation/${pcAuditId}`,null)
+    }
 
     getFirstAuditor(normeAdopteId:string):Observable<User>{
       return this.http.get<User>(`${this.baseUrl}/audit/first-auditor/${normeAdopteId}`)
+    }
+
+    checkDowloadState(auditId:string): Observable<any>{
+      return this.http.patch(`${this.baseUrl}/audit/${auditId}/downloaded`,{downloaded : true})
     }
 
 }
